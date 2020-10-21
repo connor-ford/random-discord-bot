@@ -1,0 +1,16 @@
+{
+    "rules": [
+        {
+            "name": "Bananas",
+            "trigger": "keyword",
+            "keyword": "bananas",
+            "response": "I think that's just bananas!"
+        },
+        {
+            "name": "Hello World",
+            "trigger": "command",
+            "command": "test",
+            "response": "Hello world!"
+        }
+    ]
+}

@@ -8,6 +8,7 @@
         },
         {
             "name": "Hello World",
+            "description": "Test command",
             "trigger": "command",
             "command": "test",
             "response": "Hello world!"

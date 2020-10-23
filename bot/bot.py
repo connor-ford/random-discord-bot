@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
-import logging
-import discord
 import json
+import logging
+import sys
 
-from config import TOKEN, PREFIX
+import discord
+
+from config import PREFIX, TOKEN
 
 # Init logging
 logging.basicConfig(
@@ -42,7 +44,31 @@ async def on_message(message):
     if commands:
         for command in commands:
             if message.content.startswith(PREFIX + command['command']):
-                await message.channel.send(command['response'])
+                if 'response' in command:
+                    await message.channel.send(command['response'])
+
+                if 'class' in command:
+                    command_class = getattr(sys.modules[__name__], command['class'])
+                    if not command_class:
+                        logging.error('Class %s not found. Called from command %s' %(command_class, command['name']))
+                        return
+                    response = command_class.run(
+                        params=message.content[message.content.find(" ") + 1:] if message.content.find(" ") != -1 else "" # Everything past the first space if it exists, else empty string
+                    )
+
+                    # Returned error
+                    if 'error' in response:
+                        if response['error'] == 'usage':
+                            await message.channel.send(f'Usage: `{PREFIX}{command["command"]} {command["usage"]}`')
+                            return
+                        if response['error'] == 'api':
+                            await message.channel.send('An error has occurred with the API while performing this command. Check logs for more info.')
+                            logging.error(f'API Error while running command {command["name"]}' + (f': {response["message"]}' if 'message' in response and response['message'] else f'.'))
+                            return
+
+                    # Send response
+                    await message.channel.send(response['message'])
+
                 return
     if keywords:
         for keyword in keywords:

@@ -41,13 +41,14 @@ class DogAPI():
             subbreed = params.split()[2] if len(params.split()) > 2 else ''
 
             # Get image
-            if breed == 'random': # Random breed
+            if breed == 'random':  # Random breed
                 response = requests.get(
                     url='https://dog.ceo/api/breeds/image/random'
                 )
-            else: # Specified breed
+            else:  # Specified breed
                 response = requests.get(
-                    url=f'https://dog.ceo/api/breed/{breed}' + (f'/{subbreed}' if subbreed else '') + '/images/random'
+                    url=f'https://dog.ceo/api/breed/{breed}' + (
+                        f'/{subbreed}' if subbreed else '') + '/images/random'
                 )
             if response.status_code != 200:
                 if response.json()['message'].startswith('Breed not found'):

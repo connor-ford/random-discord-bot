@@ -89,8 +89,6 @@ class CatAPI():
             }
             wiki = breed['wikipedia_url']
 
-            print(json.dumps(fields))
-
             # Get picture of breed
             response = requests.get(
                 url='https://api.thecatapi.com/v1/images/search',
@@ -103,7 +101,6 @@ class CatAPI():
                 }
 
             image_url = response.json()[0]['url']
-            print(image_url)
 
             # Wrap up info/picture in embed
             embed = Embed(

@@ -1,16 +1,29 @@
 {
     "rules": [
         {
-            "name": "Bananas",
             "trigger": "keyword",
             "keyword": "bananas",
             "response": "I think that's just bananas!"
         },
         {
-            "name": "Hello World",
+            "name": "Test Command",
+            "description": "Test command",
             "trigger": "command",
             "command": "test",
             "response": "Hello world!"
+        },
+        {
+            "name": "Cat",
+            "description": "List breeds of cats and their IDs, check info or get an image of a random or specific breed, or random gifs of cats.",
+            "usage": [
+                "breeds",
+                "info [random|<breed ID>]",
+                "image [random|<breed ID>]",
+                "gif"
+            ],
+            "trigger": "command",
+            "command": "cat",
+            "class": "CatAPI"
         }
     ]
 }

@@ -7,6 +7,7 @@ import sys
 import discord
 
 from classes.cat import CatAPI
+from classes.dog import DogAPI
 from config import PREFIX, TOKEN
 
 # Init logging

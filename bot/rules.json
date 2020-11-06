@@ -14,7 +14,7 @@
         },
         {
             "name": "Cat",
-            "description": "List breeds of cats and their IDs, check info or get an image of a random or specific breed, or random gifs of cats.",
+            "description": "List breeds of cats and their IDs, check info or get an image of a random or specified breed, or random gifs of cats.",
             "usage": [
                 "breeds",
                 "info [random|<breed ID>]",
@@ -24,6 +24,17 @@
             "trigger": "command",
             "command": "cat",
             "class": "CatAPI"
+        },
+        {
+            "name": "Dog",
+            "description": "List breeds of dogs, or get an image of a random or specified breed.",
+            "usage": [
+                "breeds",
+                "image [random|<breed> <sub-breed (optional)>]"
+            ],
+            "trigger": "command",
+            "command": "dog",
+            "class": "DogAPI"
         }
     ]
 }

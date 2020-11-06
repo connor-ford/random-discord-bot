@@ -1,19 +1,12 @@
 {
-    "rules": [
+    "commands": [
         {
-            "trigger": "keyword",
-            "keyword": "bananas",
-            "response": "I think that's just bananas!"
-        },
-        {
-            "name": "Test Command",
-            "description": "Test command",
-            "trigger": "command",
             "command": "test",
+            "description": "Test command",
             "response": "Hello world!"
         },
         {
-            "name": "Cat",
+            "command": "cat",
             "description": "List breeds of cats and their IDs, check info or get an image of a random or specified breed, or random gifs of cats.",
             "usage": [
                 "breeds",
@@ -21,20 +14,28 @@
                 "image [random|<breed ID>]",
                 "gif"
             ],
-            "trigger": "command",
-            "command": "cat",
             "class": "CatAPI"
         },
         {
-            "name": "Dog",
+            "command": "dog",
             "description": "List breeds of dogs, or get an image of a random or specified breed.",
             "usage": [
                 "breeds",
                 "image [random|<breed> <sub-breed (optional)>]"
             ],
-            "trigger": "command",
-            "command": "dog",
             "class": "DogAPI"
+        },
+        {
+            "command": "list",
+            "description": "List all available commands.",
+            "usage": "",
+            "class": "List"
+        }
+    ],
+    "keywords": [
+        {
+            "keyword": "bananas",
+            "response": "I think that's just bananas!"
         }
     ]
 }

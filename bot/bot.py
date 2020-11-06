@@ -8,6 +8,7 @@ import discord
 
 from classes.cat import CatAPI
 from classes.dog import DogAPI
+from classes.utils import List
 from config import PREFIX, TOKEN
 
 # Init logging
@@ -22,12 +23,9 @@ commands = []
 keywords = []
 
 with open('rules.json') as f:
-    rules = json.load(f)['rules']
-    for rule in rules:
-        if rule['trigger'] == 'command':
-            commands.append(rule)
-        elif rule['trigger'] == 'keyword':
-            keywords.append(rule)
+    rules = json.load(f)
+    commands = rules['commands']
+    keywords = rules['keywords']
 
 
 # Discord client
@@ -64,12 +62,14 @@ async def on_message(message):
                         sys.modules[__name__], command['class'])
                     if not command_class:
                         logging.error(
-                            f'Class {command["class"]} not found. Called from command {command["name"]}')
+                            f'Class {command["class"]} not found. Called from command {command["command"]}')
                         return
                     response = command_class.run(
                         params=message.content.lower()[message.content.find(" ") + 1:] if message.content.find(
                             " ") != -1 else ""  # Everything past the first space if it exists, else empty string
                     )
+                    logging.info(
+                        f'Class {command["class"]} ran. Called from command {command["command"]}')
 
                     # Returned error
                     if 'error' in response:
@@ -85,21 +85,19 @@ async def on_message(message):
                                     f'\n`{PREFIX}{command["command"]} {usage}`'
                             await message.channel.send(response)
                             logging.warning(
-                                f'Usage error while running command "{message.content}" (Message ID {message.id})')
+                                f'Usage error while running command "{message.content}" (Message ID {message.id})' + (f': {response["message"]}' if 'message' in response else '.'))
                             return
                         # API error
                         if response['error'] == 'API':
                             await message.channel.send('An error has occurred with the API while performing this command. Check logs for more info.')
                             logging.error(
-                                f'API Error while running command {command["name"]}' + (
-                                    f': {response["message"]}' if 'message' in response and response['message'] else f'.')
-                            )
+                                f'API Error while running command "{message.content}" (Message ID {message.id})' + (f': {response["message"]}' if 'message' in response else '.'))
                             return
 
                     # Send response
                     await message.channel.send(
-                        content=response['message'] if 'message' in response else None,
-                        embed=response['embed'] if 'embed' in response else None
+                        content = response['message'] if 'message' in response else None,
+                        embed = response['embed'] if 'embed' in response else None
                     )
                     logging.info(
                         f'Response sent to command "{message.content}" (Message ID {message.id})')

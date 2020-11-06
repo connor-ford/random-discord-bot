@@ -8,6 +8,7 @@ import discord
 
 from classes.cat import CatAPI
 from classes.dog import DogAPI
+from classes.utils import List
 from config import PREFIX, TOKEN
 
 # Init logging
@@ -61,14 +62,14 @@ async def on_message(message):
                         sys.modules[__name__], command['class'])
                     if not command_class:
                         logging.error(
-                            f'Class {command["class"]} not found. Called from command {command["name"]}')
+                            f'Class {command["class"]} not found. Called from command {command["command"]}')
                         return
                     response = command_class.run(
                         params=message.content.lower()[message.content.find(" ") + 1:] if message.content.find(
                             " ") != -1 else ""  # Everything past the first space if it exists, else empty string
                     )
                     logging.info(
-                        f'Class {command["class"]} ran. Called from command {command["name"]}')
+                        f'Class {command["class"]} ran. Called from command {command["command"]}')
 
                     # Returned error
                     if 'error' in response:

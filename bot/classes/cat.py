@@ -75,7 +75,7 @@ class CatAPI():
                         'error': 'USAGE',
                         'message': 'The code provided did not match any valid code.'
                     }
-            
+
             # Get info
             name = breed['name']
             description = breed['description']
@@ -89,11 +89,9 @@ class CatAPI():
             }
             wiki = breed['wikipedia_url']
 
-            print(json.dumps(fields))
-
             # Get picture of breed
             response = requests.get(
-                url='https://api.thecatapi.com/v1/images/search', 
+                url='https://api.thecatapi.com/v1/images/search',
                 params={'breed_ids': breed_id} if breed_id != 'random' else {}
             )
             if response.status_code != 200:
@@ -103,7 +101,6 @@ class CatAPI():
                 }
 
             image_url = response.json()[0]['url']
-            print(image_url)
 
             # Wrap up info/picture in embed
             embed = Embed(
@@ -120,7 +117,7 @@ class CatAPI():
             embed.set_footer(text=wiki)
 
             message['embed'] = embed
-        
+
         # Image
         elif subcommand == 'image':
 
@@ -133,8 +130,9 @@ class CatAPI():
 
             # Get image
             response = requests.get(
-                url='https://api.thecatapi.com/v1/images/search', 
-                params=dict({'mime_types': 'jpg,png'}, **({'breed_ids': breed_id} if breed_id != 'random' else {}))
+                url='https://api.thecatapi.com/v1/images/search',
+                params=dict({'mime_types': 'jpg,png'}, **
+                            ({'breed_ids': breed_id} if breed_id != 'random' else {}))
             )
             if response.status_code != 200:
                 return {
@@ -146,7 +144,7 @@ class CatAPI():
         elif subcommand == 'gif':
             # Get gif
             response = requests.get(
-                url='https://api.thecatapi.com/v1/images/search', 
+                url='https://api.thecatapi.com/v1/images/search',
                 params={'mime_types': 'gif'}
             )
             if response.status_code != 200:

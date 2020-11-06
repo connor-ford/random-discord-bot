@@ -22,12 +22,9 @@ commands = []
 keywords = []
 
 with open('rules.json') as f:
-    rules = json.load(f)['rules']
-    for rule in rules:
-        if rule['trigger'] == 'command':
-            commands.append(rule)
-        elif rule['trigger'] == 'keyword':
-            keywords.append(rule)
+    rules = json.load(f)
+    commands = rules['commands']
+    keywords = rules['keywords']
 
 
 # Discord client

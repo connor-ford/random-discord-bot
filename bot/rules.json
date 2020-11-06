@@ -1,14 +1,8 @@
 {
-    "rules": [
-        {
-            "trigger": "keyword",
-            "keyword": "bananas",
-            "response": "I think that's just bananas!"
-        },
+    "commands": [
         {
             "command": "test",
             "description": "Test command",
-            "trigger": "command",
             "response": "Hello world!"
         },
         {
@@ -20,7 +14,6 @@
                 "image [random|<breed ID>]",
                 "gif"
             ],
-            "trigger": "command",
             "class": "CatAPI"
         },
         {
@@ -30,15 +23,19 @@
                 "breeds",
                 "image [random|<breed> <sub-breed (optional)>]"
             ],
-            "trigger": "command",
             "class": "DogAPI"
         },
         {
             "command": "list",
             "description": "List all available commands.",
             "usage": "",
-            "trigger": "command",
             "class": "List"
+        }
+    ],
+    "keywords": [
+        {
+            "keyword": "bananas",
+            "response": "I think that's just bananas!"
         }
     ]
 }

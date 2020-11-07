@@ -8,8 +8,8 @@ import discord
 
 from classes.cat import CatAPI
 from classes.dog import DogAPI
-from classes.utils import List
-from config import PREFIX, TOKEN
+from classes.utils import List, Prefix
+from config import TOKEN
 
 # Init logging
 logging.basicConfig(
@@ -26,6 +26,9 @@ with open('rules.json') as f:
     rules = json.load(f)
     commands = rules['commands']
     keywords = rules['keywords']
+
+with open('data/server_data.json') as f:
+    server_data = json.load(f)
 
 
 # Discord client
@@ -45,10 +48,15 @@ async def on_message(message):
     if message.author.bot:
         return
 
+    if str(message.guild.id) not in server_data:
+        server_data[str(message.guild.id)] = {'prefix': '!'}
+
+    prefix = server_data[str(message.guild.id)]['prefix']
+
     if commands:
         for command in commands:
             # If message is the command
-            if message.content.lower().startswith(PREFIX + command['command']):
+            if message.content.lower().startswith(prefix + command['command']):
                 logging.info(
                     f'{message.author} ran the command "{message.content}" (Message ID {message.id})')
 
@@ -66,7 +74,8 @@ async def on_message(message):
                         return
                     response = command_class.run(
                         params=message.content.lower()[message.content.find(" ") + 1:] if message.content.find(
-                            " ") != -1 else ""  # Everything past the first space if it exists, else empty string
+                            " ") != -1 else "",  # Everything past the first space if it exists, else empty string
+                        guild_data=server_data[str(message.guild.id)]
                     )
                     logging.info(
                         f'Class {command["class"]} ran. Called from command {command["command"]}')
@@ -82,7 +91,7 @@ async def on_message(message):
                             response = f'Usage:'
                             for usage in usages:
                                 response = response + \
-                                    f'\n`{PREFIX}{command["command"]} {usage}`'
+                                    f'\n`{prefix}{command["command"]} {usage}`'
                             await message.channel.send(response)
                             logging.warning(
                                 f'Usage error while running command "{message.content}" (Message ID {message.id})' + (f': {response["message"]}' if 'message' in response else '.'))
@@ -94,10 +103,17 @@ async def on_message(message):
                                 f'API Error while running command "{message.content}" (Message ID {message.id})' + (f': {response["message"]}' if 'message' in response else '.'))
                             return
 
+                    # If guild data changed, update file
+                    if 'guild_data' in response:
+                        server_data[str(message.guild.id)].update(response['guild_data'])
+                        print(server_data)
+                        with open('data/server_data.json', 'w') as f:
+                            json.dump(server_data, f)
+
                     # Send response
                     await message.channel.send(
-                        content = response['message'] if 'message' in response else None,
-                        embed = response['embed'] if 'embed' in response else None
+                        content=response['message'] if 'message' in response else None,
+                        embed=response['embed'] if 'embed' in response else None
                     )
                     logging.info(
                         f'Response sent to command "{message.content}" (Message ID {message.id})')

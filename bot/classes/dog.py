@@ -3,7 +3,7 @@ import requests
 
 
 class DogAPI():
-    def run(params=None):
+    def run(params=None, guild_data=None):
 
         if not params:
             return {'error': 'USAGE'}

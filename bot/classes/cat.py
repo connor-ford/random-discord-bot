@@ -6,7 +6,7 @@ from discord import Embed
 
 
 class CatAPI():
-    def run(params=None):
+    def run(params=None, guild_data=None):
 
         if not params:
             return {'error': 'USAGE'}
@@ -81,13 +81,13 @@ class CatAPI():
             description = breed['description']
             fields = {
                 'ID': breed['id'].upper(),
-                'AKA': breed['alt_names'] if breed['alt_names'] else 'None',
+                'AKA': breed['alt_names'] if 'alt_names' in breed and breed['alt_names'] else 'None',
                 'Life Span': f'{breed["life_span"]} years',
                 'Weight': f'{breed["weight"]["imperial"]} lbs ({breed["weight"]["metric"]} kgs)',
                 'Temperament': breed['temperament'],
                 'Origin': f'{breed["origin"]} ({breed["country_code"]})'
             }
-            wiki = breed['wikipedia_url']
+            wiki = breed.get('wikipedia_url', 'No Wikipedia URL Found.')
 
             # Get picture of breed
             response = requests.get(

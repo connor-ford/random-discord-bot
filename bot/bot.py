@@ -8,7 +8,7 @@ import discord
 
 from classes.cat import CatAPI
 from classes.dog import DogAPI
-from classes.utils import List, Prefix
+from classes.utils import List, Prefix, Usage
 from config import TOKEN
 
 # Init logging
@@ -90,8 +90,7 @@ async def on_message(message):
                                 command['usage']]
                             response = f'Usage:'
                             for usage in usages:
-                                response = response + \
-                                    f'\n`{prefix}{command["command"]} {usage}`'
+                                response += f'\n`{prefix}{command["command"]} {usage}`'
                             await message.channel.send(response)
                             logging.warning(
                                 f'Usage error while running command "{message.content}" (Message ID {message.id})' + (f': {response["message"]}' if 'message' in response else '.'))
@@ -105,8 +104,8 @@ async def on_message(message):
 
                     # If guild data changed, update file
                     if 'guild_data' in response:
-                        server_data[str(message.guild.id)].update(response['guild_data'])
-                        print(server_data)
+                        server_data[str(message.guild.id)].update(
+                            response['guild_data'])
                         with open('data/server_data.json', 'w') as f:
                             json.dump(server_data, f)
 

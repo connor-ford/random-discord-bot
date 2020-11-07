@@ -1,5 +1,6 @@
 import json
 
+
 class List():
     def run(params=None, guild_data=None):
         with open('rules.json') as f:
@@ -15,6 +16,7 @@ class List():
 
         return message
 
+
 class Prefix():
     def run(params=None, guild_data=None):
         if not params:
@@ -26,4 +28,32 @@ class Prefix():
         message['message'] = f'Prefix updated to {prefix}'
         guild_data['prefix'] = prefix
         message['guild_data'] = guild_data
+        return message
+
+
+class Usage():
+    def run(params=None, guild_data=None):
+        if not params:
+            return {'error': 'USAGE'}
+
+        usage_command = params.split()[0]
+
+        with open('rules.json') as f:
+            rules = json.load(f)
+            commands = rules['commands']
+
+        found_command = {}
+        for command in commands:
+            if usage_command == command['command']:
+                found_command = command
+        
+        if not found_command:
+            return {'error': 'USAGE', 'message': f'Command not recognized. Please use {guild_data["prefix"]}list to see a full list of commands.'}
+
+        message = {}
+        usages = found_command['usage'] if type(found_command['usage']) is list else [
+            found_command['usage']]
+        message['message'] = f'Usage:'
+        for usage in usages:
+            message['message'] += f'\n`{guild_data["prefix"]}{found_command["command"]} {usage}`'
         return message

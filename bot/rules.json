@@ -1,11 +1,6 @@
 {
     "commands": [
         {
-            "command": "test",
-            "description": "Test command",
-            "response": "Hello world!"
-        },
-        {
             "command": "cat",
             "description": "List breeds of cats and their IDs, check info or get an image of a random or specified breed, or random gifs of cats.",
             "usage": [
@@ -36,6 +31,12 @@
             "description": "Change the prefix used on this server.",
             "usage": "<new prefix>",
             "class": "Prefix"
+        },
+        {
+            "command": "usage",
+            "description": "Get the usage of the specified command.",
+            "usage": "<command>",
+            "class": "Usage"
         }
     ],
     "keywords": [

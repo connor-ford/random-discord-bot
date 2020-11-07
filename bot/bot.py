@@ -5,7 +5,6 @@ import logging
 import sys
 
 import discord
-from discord import guild
 
 from classes.cat import CatAPI
 from classes.dog import DogAPI

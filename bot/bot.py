@@ -6,8 +6,7 @@ import sys
 
 import discord
 
-from classes.cat import CatAPI
-from classes.dog import DogAPI
+from classes.api import CatAPI, DogAPI
 from classes.utils import List, Prefix, Usage
 from config import TOKEN
 
@@ -49,9 +48,13 @@ async def on_message(message):
         return
 
     if str(message.guild.id) not in server_data:
-        server_data[str(message.guild.id)] = {'prefix': '!'}
+        server_data[str(message.guild.id)] = {
+            'general': {
+                'prefix': '!'
+            }
+        }
 
-    prefix = server_data[str(message.guild.id)]['prefix']
+    prefix = server_data[str(message.guild.id)]['general']['prefix']
 
     if commands:
         for command in commands:

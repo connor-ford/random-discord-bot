@@ -26,7 +26,7 @@ class Prefix():
         prefix = params.split()[0]
         message = {}
         message['message'] = f'Prefix updated to {prefix}'
-        guild_data['prefix'] = prefix
+        guild_data['general']['prefix'] = prefix
         message['guild_data'] = guild_data
         return message
 

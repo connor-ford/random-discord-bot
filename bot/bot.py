@@ -6,7 +6,7 @@ import sys
 
 import discord
 
-from classes.api import CatAPI, DogAPI
+from classes.api import CatAPI, DogAPI, JokeAPI
 from classes.utils import List, Prefix, Usage
 from config import TOKEN
 
@@ -47,14 +47,16 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    if str(message.guild.id) not in server_data:
-        server_data[str(message.guild.id)] = {
+    guild_id = str(message.guild.id)
+
+    if guild_id not in server_data:
+        server_data[guild_id] = {
             'general': {
                 'prefix': '!'
             }
         }
 
-    prefix = server_data[str(message.guild.id)]['general']['prefix']
+    prefix = server_data[guild_id]['general']['prefix']
 
     if commands:
         for command in commands:
@@ -78,7 +80,7 @@ async def on_message(message):
                     response = command_class.run(
                         params=message.content.lower()[message.content.find(" ") + 1:] if message.content.find(
                             " ") != -1 else "",  # Everything past the first space if it exists, else empty string
-                        guild_data=server_data[str(message.guild.id)]
+                        guild_data=server_data[guild_id]
                     )
                     logging.info(
                         f'Class {command["class"]} ran. Called from command {command["command"]}')
@@ -107,7 +109,7 @@ async def on_message(message):
 
                     # If guild data changed, update file
                     if 'guild_data' in response:
-                        server_data[str(message.guild.id)].update(
+                        server_data[guild_id].update(
                             response['guild_data'])
                         with open('data/server_data.json', 'w') as f:
                             json.dump(server_data, f)

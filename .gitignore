@@ -133,3 +133,6 @@ logs/log.txt
 
 # Config
 config.py
+
+# Data
+data/server_data.json

@@ -221,3 +221,50 @@ class DogAPI():
             return {'error': 'USAGE'}
 
         return message
+
+
+class JokeAPI():
+    def run(params=None, guild_data=None):
+        
+        if not params:
+            return {'error': 'USAGE'}
+
+        subcommand = params.split()[0]
+
+        message = {}
+
+        # Subcommand validation
+        if subcommand != 'single' and subcommand != 'twopart':
+            return {'error': 'USAGE'}
+            
+        # Get genres, defaulting to "any" if not specified
+        if len(params.split()) > 1:
+            genres = params.split()[1]
+        else:
+            genres = 'any'
+
+        # Send request
+        response = requests.get(
+            url=f'https://sv443.net/jokeapi/v2/joke/{genres}',
+            params={
+                'type': subcommand
+            }
+        )
+        if response.status_code == 106:
+            return {
+                'error': 'USAGE',
+                'message': response.json()['additionalInfo']
+            }
+        if response.status_code != 200:
+            return {
+                'error': 'API',
+                'message': response.text
+            }
+
+        # Compile Message
+        if subcommand == 'twopart':
+            message['message'] = f'{response.json()["setup"]}\n||{response.json()["delivery"]}||'
+        else:
+            message['message'] = f'{response.json()["joke"]}'
+
+        return message

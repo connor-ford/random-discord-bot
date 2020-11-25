@@ -221,52 +221,7 @@ def dog_api(params=None, guild_data=None):
     return message
 
 
-def joke_api(params=None, guild_data=None):
-    if not params:
-        return {'error': 'USAGE'}
-
-    subcommand = params.split()[0]
-
-    message = {}
-
-    # Subcommand validation
-    if subcommand != 'single' and subcommand != 'twopart':
-        return {'error': 'USAGE'}
-
-    # Get genres, defaulting to "any" if not specified
-    if len(params.split()) > 1:
-        genres = params.split()[1]
-    else:
-        genres = 'any'
-
-    # Send request
-    response = requests.get(
-        url=f'https://sv443.net/jokeapi/v2/joke/{genres}',
-        params={
-            'type': subcommand
-        }
-    )
-    if response.status_code == 106:
-        return {
-            'error': 'USAGE',
-            'message': response.json()['additionalInfo']
-        }
-    if response.status_code != 200:
-        return {
-            'error': 'API',
-            'message': response.text
-        }
-
-    # Compile Message
-    if subcommand == 'twopart':
-        message['message'] = f'{response.json()["setup"]}\n||{response.json()["delivery"]}||'
-    else:
-        message['message'] = f'{response.json()["joke"]}'
-
-    return message
-
-
-def mc_username_finder(params=None, guild_data=None):
+def find_mc_username(params=None, guild_data=None):
     if not params or len(params.split()) > 1:
         return {'error': 'USAGE', 'message': 'Please supply a valid username or UUID.'}
 
@@ -321,4 +276,78 @@ def mc_username_finder(params=None, guild_data=None):
     embed.add_field(name='Previous Names', value=mc_prev_names_str)
 
     message['embed'] = embed
+    return message
+
+
+def grab_mc_skin(params=None, guild_data=None):
+    if not params or len(params.split()) > 1:
+        return {'error': 'USAGE', 'message': 'Please supply a valid username or UUID.'}
+
+    mc_uuid = None
+    mc_username = ""
+
+    # Check if UUID
+    try:
+        mc_uuid = str(UUID(params.split()[0], version=4))
+    except ValueError:
+        mc_username = params.split()[0]
+
+    # If not UUID, get UUID
+    if mc_username:
+        response = requests.get(
+            url=f'https://api.mojang.com/users/profiles/minecraft/{mc_username}')
+        if response.status_code == 204 or ('error' in response.json() and 'is invalid' in response.json()['errorMessage']):  # No content = no information
+            return {'message': 'The supplied username could not be found.'}
+        if response.status_code != 200:
+            return {'error': 'API', 'message': response.text}
+
+        mc_uuid = str(UUID(response.json()['id'], version=4))
+
+    # URL to skin
+    message = {'message': f'https://crafatar.com/skins/{mc_uuid}'}
+    return message
+
+
+def joke_api(params=None, guild_data=None):
+    if not params:
+        return {'error': 'USAGE'}
+
+    subcommand = params.split()[0]
+
+    message = {}
+
+    # Subcommand validation
+    if subcommand != 'single' and subcommand != 'twopart':
+        return {'error': 'USAGE'}
+
+    # Get genres, defaulting to "any" if not specified
+    if len(params.split()) > 1:
+        genres = params.split()[1]
+    else:
+        genres = 'any'
+
+    # Send request
+    response = requests.get(
+        url=f'https://sv443.net/jokeapi/v2/joke/{genres}',
+        params={
+            'type': subcommand
+        }
+    )
+    if response.status_code == 106:
+        return {
+            'error': 'USAGE',
+            'message': response.json()['additionalInfo']
+        }
+    if response.status_code != 200:
+        return {
+            'error': 'API',
+            'message': response.text
+        }
+
+    # Compile Message
+    if subcommand == 'twopart':
+        message['message'] = f'{response.json()["setup"]}\n||{response.json()["delivery"]}||'
+    else:
+        message['message'] = f'{response.json()["joke"]}'
+
     return message

@@ -6,8 +6,8 @@ import sys
 
 import discord
 
-from classes.api import CatAPI, DogAPI, JokeAPI
-from classes.utils import List, Prefix, Usage
+from methods.api import cat_api, dog_api, joke_api, mc_username_finder
+from methods.utils import list_commands, change_prefix, get_usage
 from config import TOKEN
 
 # Init logging
@@ -69,21 +69,21 @@ async def on_message(message):
                 if 'response' in command:
                     await message.channel.send(command['response'])
 
-                # Call specified class, if exists
-                if 'class' in command:
-                    command_class = getattr(
-                        sys.modules[__name__], command['class'])
-                    if not command_class:
+                # Call specified method, if exists
+                if 'method' in command:
+                    command_method = getattr(
+                        sys.modules[__name__], command['method'])
+                    if not command_method:
                         logging.error(
-                            f'Class {command["class"]} not found. Called from command {command["command"]}')
+                            f'Method {command["method"]} not found. Called from command {command["command"]}')
                         return
-                    response = command_class.run(
+                    response = command_method(
                         params=message.content.lower()[message.content.find(" ") + 1:] if message.content.find(
                             " ") != -1 else "",  # Everything past the first space if it exists, else empty string
                         guild_data=server_data[guild_id]
                     )
                     logging.info(
-                        f'Class {command["class"]} ran. Called from command {command["command"]}')
+                        f'Method {command["method"]} ran. Called from command {command["command"]}')
 
                     # Returned error
                     if 'error' in response:

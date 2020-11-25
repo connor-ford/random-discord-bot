@@ -9,7 +9,7 @@
                 "image [random|<breed ID>]",
                 "gif"
             ],
-            "class": "CatAPI"
+            "method": "cat_api"
         },
         {
             "command": "dog",
@@ -18,31 +18,37 @@
                 "breeds",
                 "image [random|<breed> <sub-breed (optional)>]"
             ],
-            "class": "DogAPI"
-        },
-        {
-            "command": "list",
-            "description": "List all available commands.",
-            "usage": "",
-            "class": "List"
-        },
-        {
-            "command": "prefix",
-            "description": "Change the prefix used on this server.",
-            "usage": "<new prefix>",
-            "class": "Prefix"
-        },
-        {
-            "command": "usage",
-            "description": "Get the usage of the specified command.",
-            "usage": "<command>",
-            "class": "Usage"
+            "method": "dog_api"
         },
         {
             "command": "joke",
             "description": "Get a single or twopart joke from a specified genre.",
             "usage": "[single|twopart] [programming|miscellaneous|dark|pun|spooky|christmas|any (optional)]",
-            "class": "JokeAPI"
+            "method": "joke_api"
+        },
+        {
+            "command": "list",
+            "description": "List all available commands.",
+            "usage": "",
+            "method": "list_commands"
+        },
+        {
+            "command": "mcuser",
+            "description": "Gets information about the supplied Minecraft user.",
+            "usage": "<username|UUID>",
+            "method": "mc_username_finder"
+        },
+        {
+            "command": "prefix",
+            "description": "Change the prefix used on this server.",
+            "usage": "<new prefix>",
+            "method": "change_prefix"
+        },
+        {
+            "command": "usage",
+            "description": "Get the usage of the specified command.",
+            "usage": "<command>",
+            "method": "get_usage"
         }
     ],
     "keywords": [

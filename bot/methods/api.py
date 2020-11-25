@@ -279,6 +279,35 @@ def find_mc_username(params=None, guild_data=None):
     return message
 
 
+def grab_mc_skin(params=None, guild_data=None):
+    if not params or len(params.split()) > 1:
+        return {'error': 'USAGE', 'message': 'Please supply a valid username or UUID.'}
+
+    mc_uuid = None
+    mc_username = ""
+
+    # Check if UUID
+    try:
+        mc_uuid = str(UUID(params.split()[0], version=4))
+    except ValueError:
+        mc_username = params.split()[0]
+
+    # If not UUID, get UUID
+    if mc_username:
+        response = requests.get(
+            url=f'https://api.mojang.com/users/profiles/minecraft/{mc_username}')
+        if response.status_code == 204 or ('error' in response.json() and 'is invalid' in response.json()['errorMessage']):  # No content = no information
+            return {'message': 'The supplied username could not be found.'}
+        if response.status_code != 200:
+            return {'error': 'API', 'message': response.text}
+
+        mc_uuid = str(UUID(response.json()['id'], version=4))
+
+    # URL to skin
+    message = {'message': f'https://crafatar.com/skins/{mc_uuid}'}
+    return message
+
+
 def joke_api(params=None, guild_data=None):
     if not params:
         return {'error': 'USAGE'}

@@ -6,7 +6,7 @@ import sys
 
 import discord
 
-from methods.api import cat_api, dog_api, joke_api
+from methods.api import cat_api, dog_api, joke_api, mc_username_finder
 from methods.utils import list_commands, change_prefix, get_usage
 from config import TOKEN
 

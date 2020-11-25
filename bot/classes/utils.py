@@ -46,7 +46,7 @@ class Usage():
         for command in commands:
             if usage_command == command['command']:
                 found_command = command
-        
+
         if not found_command:
             return {'error': 'USAGE', 'message': f'Command not recognized. Please use {guild_data["general"]["prefix"]}list to see a full list of commands.'}
 

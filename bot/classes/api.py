@@ -225,7 +225,7 @@ class DogAPI():
 
 class JokeAPI():
     def run(params=None, guild_data=None):
-        
+
         if not params:
             return {'error': 'USAGE'}
 
@@ -236,7 +236,7 @@ class JokeAPI():
         # Subcommand validation
         if subcommand != 'single' and subcommand != 'twopart':
             return {'error': 'USAGE'}
-            
+
         # Get genres, defaulting to "any" if not specified
         if len(params.split()) > 1:
             genres = params.split()[1]

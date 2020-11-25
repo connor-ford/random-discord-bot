@@ -21,6 +21,12 @@
             "class": "DogAPI"
         },
         {
+            "command": "joke",
+            "description": "Get a single or twopart joke from a specified genre.",
+            "usage": "[single|twopart] [programming|miscellaneous|dark|pun|spooky|christmas|any (optional)]",
+            "class": "JokeAPI"
+        },
+        {
             "command": "list",
             "description": "List all available commands.",
             "usage": "",
@@ -37,12 +43,6 @@
             "description": "Get the usage of the specified command.",
             "usage": "<command>",
             "class": "Usage"
-        },
-        {
-            "command": "joke",
-            "description": "Get a single or twopart joke from a specified genre.",
-            "usage": "[single|twopart] [programming|miscellaneous|dark|pun|spooky|christmas|any (optional)]",
-            "class": "JokeAPI"
         }
     ],
     "keywords": [

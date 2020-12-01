@@ -55,6 +55,12 @@
             "description": "Get the usage of the specified command.",
             "usage": "<command>",
             "method": "get_usage"
+        },
+        {
+            "command": "worm",
+            "description": "Get an image of a worm on a string, shifted by either a specified or random hue value.",
+            "usage": "[<hue value>|random]",
+            "method": "worm_on_a_string"
         }
     ],
     "keywords": [

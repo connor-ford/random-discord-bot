@@ -8,6 +8,7 @@ import discord
 
 from methods.api import cat_api, dog_api, joke_api
 from methods.minecraft import find_mc_username, grab_mc_skin
+from methods.pil import worm_on_a_string
 from methods.utils import list_commands, change_prefix, get_usage
 from config import TOKEN
 
@@ -118,7 +119,8 @@ async def on_message(message):
                     # Send response
                     await message.channel.send(
                         content=response['message'] if 'message' in response else None,
-                        embed=response['embed'] if 'embed' in response else None
+                        embed=response['embed'] if 'embed' in response else None,
+                        file=response['file'] if 'file' in response else None
                     )
                     logging.info(
                         f'Response sent to command "{message.content}" (Message ID {message.id})')

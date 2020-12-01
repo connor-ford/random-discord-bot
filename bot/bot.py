@@ -6,7 +6,8 @@ import sys
 
 import discord
 
-from methods.api import cat_api, dog_api, find_mc_username, grab_mc_skin, joke_api
+from methods.api import cat_api, dog_api, joke_api
+from methods.minecraft import find_mc_username, grab_mc_skin
 from methods.utils import list_commands, change_prefix, get_usage
 from config import TOKEN
 

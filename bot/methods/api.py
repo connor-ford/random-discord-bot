@@ -25,17 +25,8 @@ def cat_api(params=None, guild_data=None):
 
         message['message'] = "List of breeds and their IDs:\n```"
 
-        # Line up breed codes with offset
-        # Note: not used due to 2000 character limit in Discord messages.
-
-        # max_length = 0
-        # for breed in breeds:
-        #     if len(breed["name"]) > max_length: max_length = len(breed["name"])
-        # for breed in breeds:
-        #     message += f'\n{breed["name"]}   {repeat(" ",max_length-len(breed["name"]))}{breed["id"]}'
-
         for breed in breeds:
-            message['message'] += f'\n{breed["name"]}: {breed["id"]}'
+            message['message'] += f'\n{breed["name"]}: {breed["id"].upper()}'
 
         message['message'] += '```'
 

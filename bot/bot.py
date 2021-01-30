@@ -2,6 +2,7 @@
 
 import json
 import logging
+import random
 import sys
 from logging.handlers import TimedRotatingFileHandler
 from os import path
@@ -48,9 +49,12 @@ client = discord.Client()
 @client.event
 async def on_ready():
     logger.info("%s has connected." % (client.user))
-    # Changes activity to 'Watching television'
+    # Changes activity to a random line in statuses.txt
     await client.change_presence(
-        activity=discord.Activity(type=discord.ActivityType.watching, name="television")
+        activity=discord.Activity(
+            type=discord.ActivityType.watching,
+            name=random.choice(open("resources/statuses.txt").read().splitlines()),
+        )
     )
 
 

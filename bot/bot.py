@@ -3,6 +3,7 @@
 import json
 import logging
 import sys
+from logging.handlers import TimedRotatingFileHandler
 
 import discord
 
@@ -14,7 +15,7 @@ from methods.utils import change_prefix, get_usage, list_commands
 
 # Init logging
 formatter = logging.Formatter('[%(asctime)s] %(levelname)s - %(message)s')
-handler = logging.FileHandler(filename='logs/random_discord_bot.log')
+handler = TimedRotatingFileHandler('logs/random_discord_bot.log', when='midnight', interval=1)
 handler.setFormatter(formatter)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

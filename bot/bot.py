@@ -179,13 +179,9 @@ async def on_message(message):
                 )
                 # Substitute variables with their values
                 response = response.replace("$NAME$", message.author.name)
-                response = response.replace(
-                    "$NICK$", message.author.nick
-                )
+                response = response.replace("$NICK$", message.author.nick)
                 response = response.replace("$ID$", f"<@{message.author.id}>")
-                response = response.replace(
-                    "$CHANNEL$", message.channel.name
-                )
+                response = response.replace("$CHANNEL$", message.channel.name)
                 response = response.replace("$GUILD$", message.guild.name)
                 await message.channel.send(response)
                 logger.info(

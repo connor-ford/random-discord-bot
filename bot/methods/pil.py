@@ -53,8 +53,8 @@ def worm_on_a_string(params=None, guild_data=None):
         new_image = _colorize(image, hue)
         new_image.save("resources/temp/worm-on-a-string.png")
 
-    response = {
+    message = {
         "message": f"Worm on a string, shifted by a hue value of {str(hue)}.",
         "file": File(fp="resources/temp/worm-on-a-string.png"),
     }
-    return response
+    return message

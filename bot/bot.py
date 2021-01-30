@@ -12,7 +12,14 @@ from config import TOKEN
 from methods.api import cat_api, dog_api, joke_api
 from methods.minecraft import find_mc_username, grab_mc_skin
 from methods.pil import worm_on_a_string
-from methods.utils import change_prefix, get_usage, list_commands
+from methods.utils import (
+    change_prefix,
+    flip_coin,
+    get_usage,
+    list_commands,
+    random_value,
+    roll_die,
+)
 
 # Init logging
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
@@ -59,7 +66,7 @@ async def on_message(message):
         with open(f"data/guilds/{guild_id}.json") as f:
             guild_data = json.load(f)
     else:
-        guild_data = {"general": {"prefix": "!"}}
+        guild_data = {"general": {"prefix": "rdb-"}}
 
     prefix = guild_data["general"]["prefix"]
 
@@ -137,6 +144,16 @@ async def on_message(message):
                         guild_data.update(response["guild_data"])
                         with open(f"data/guilds/{guild_id}.json", "w") as f:
                             json.dump(guild_data, f)
+
+                    # If response is larger than 2000 characters, error out
+                    if len(response["message"]) > 2000:
+                        await message.channel.send(
+                            "The response message is larger than 2000 characters."
+                        )
+                        logger.error(
+                            f'Character limit exceeded while running command "{message.content}" (Message ID {message.id}'
+                        )
+                        return
 
                     # Send response
                     await message.channel.send(

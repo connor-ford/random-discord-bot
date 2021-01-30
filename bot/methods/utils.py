@@ -64,7 +64,7 @@ def get_usage(params=None, guild_data=None):
 
 
 def list_commands(params=None, guild_data=None):
-    with open("rules.json") as f:
+    with open("commands.json") as f:
         commands = json.load(f)["commands"]
 
     message = {}

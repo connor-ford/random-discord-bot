@@ -11,6 +11,7 @@ import discord
 
 from config import TOKEN
 from methods.api import cat_api, dog_api, joke_api
+from methods.keywords import keywords
 from methods.minecraft import find_mc_username, grab_mc_skin
 from methods.pil import worm_on_a_string
 from methods.utils import (
@@ -32,14 +33,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(handler)
 
-# Parse rules.json
-commands = []
-keywords = []
-
-with open("rules.json") as f:
-    rules = json.load(f)
-    commands = rules["commands"]
-    keywords = rules["keywords"]
+# Parse commands
+with open("commands.json") as f:
+    commands = json.load(f)["commands"]
 
 
 # Discord client
@@ -70,7 +66,7 @@ async def on_message(message):
         with open(f"data/guilds/{guild_id}.json") as f:
             guild_data = json.load(f)
     else:
-        guild_data = {"general": {"prefix": "rdb-"}}
+        guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
 
     prefix = guild_data["general"]["prefix"]
 
@@ -174,15 +170,26 @@ async def on_message(message):
                     )
 
                 return
-    if keywords:
-        for keyword in keywords:
-            if keyword["keyword"] in message.content.lower():
+    if guild_data["keywords"]:
+        for keyword, response in guild_data["keywords"].items():
+            # If keyword is found in the message
+            if keyword in message.content.lower():
                 logger.info(
-                    f'{message.author} triggered the keyword "{keyword["keyword"]}" (Message ID {message.id})'
+                    f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
                 )
-                await message.channel.send(keyword["response"])
+                # Substitute variables with their values
+                response = response.replace("$NAME$", message.author.name)
+                response = response.replace(
+                    "$NICK$", message.author.nick
+                )
+                response = response.replace("$ID$", f"<@{message.author.id}>")
+                response = response.replace(
+                    "$CHANNEL$", message.channel.name
+                )
+                response = response.replace("$GUILD$", message.guild.name)
+                await message.channel.send(response)
                 logger.info(
-                    f'Response sent to keyword "{keyword["keyword"]}" (Message ID {message.id})'
+                    f'Response {response} sent to keyword "{keyword}" (Message ID {message.id})'
                 )
                 return
 

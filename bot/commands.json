@@ -33,6 +33,16 @@
             "method": "joke_api"
         },
         {
+            "command": "keywords",
+            "description": "Get a list of server keywords, add a keyword or remove a keyword. Supported Variables: $NAME$, $NICK$, $ID$, $CHANNEL$, and $GUILD$.",
+            "usage": [
+                "list",
+                "add <keyword> <response>",
+                "remove <keyword>"
+            ],
+            "method": "keywords"
+        },
+        {
             "command": "list",
             "description": "List all available commands.",
             "usage": "",
@@ -79,12 +89,6 @@
             "description": "Get an image of a worm on a string, shifted by either a specified or random hue value.",
             "usage": "[random|<hue value> (default random)]",
             "method": "worm_on_a_string"
-        }
-    ],
-    "keywords": [
-        {
-            "keyword": "bananas",
-            "response": "I think that's just bananas!"
         }
     ]
 }

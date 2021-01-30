@@ -6,18 +6,19 @@ import sys
 
 import discord
 
+from config import TOKEN
 from methods.api import cat_api, dog_api, joke_api
 from methods.minecraft import find_mc_username, grab_mc_skin
 from methods.pil import worm_on_a_string
-from methods.utils import list_commands, change_prefix, get_usage
-from config import TOKEN
+from methods.utils import change_prefix, get_usage, list_commands
 
 # Init logging
-logging.basicConfig(
-    filename='logs/log.txt',
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s - %(message)s'
-)
+formatter = logging.Formatter('[%(asctime)s] %(levelname)s - %(message)s')
+handler = logging.FileHandler(filename='logs/random_discord_bot.log')
+handler.setFormatter(formatter)
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 # Parse rules.json
 commands = []
@@ -38,7 +39,7 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    logging.info('%s has connected.' % (client.user))
+    logger.info('%s has connected.' % (client.user))
     # Changes activity to 'Watching television'
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='television'))
 
@@ -64,7 +65,7 @@ async def on_message(message):
         for command in commands:
             # If message is the command
             if message.content.lower().startswith(prefix + command['command']):
-                logging.info(
+                logger.info(
                     f'{message.author} ran the command "{message.content}" (Message ID {message.id})')
 
                 # Send specified response, if exists
@@ -76,7 +77,7 @@ async def on_message(message):
                     command_method = getattr(
                         sys.modules[__name__], command['method'])
                     if not command_method:
-                        logging.error(
+                        logger.error(
                             f'Method {command["method"]} not found. Called from command {command["command"]}')
                         return
                     response = command_method(
@@ -84,7 +85,7 @@ async def on_message(message):
                             " ") != -1 else "",  # Everything past the first space if it exists, else empty string
                         guild_data=server_data[guild_id]
                     )
-                    logging.info(
+                    logger.info(
                         f'Method {command["method"]} ran. Called from command {command["command"]}')
 
                     # Returned error
@@ -99,13 +100,13 @@ async def on_message(message):
                             for usage in usages:
                                 response += f'\n`{prefix}{command["command"]} {usage}`'
                             await message.channel.send(response)
-                            logging.warning(
+                            logger.warning(
                                 f'Usage error while running command "{message.content}" (Message ID {message.id})' + (f': {response["message"]}' if 'message' in response else '.'))
                             return
                         # API error
                         if response['error'] == 'API':
                             await message.channel.send('An error has occurred with the API while performing this command. Check logs for more info.')
-                            logging.error(
+                            logger.error(
                                 f'API Error while running command "{message.content}" (Message ID {message.id})' + (f': {response["message"]}' if 'message' in response else '.'))
                             return
 
@@ -122,17 +123,17 @@ async def on_message(message):
                         embed=response['embed'] if 'embed' in response else None,
                         file=response['file'] if 'file' in response else None
                     )
-                    logging.info(
+                    logger.info(
                         f'Response sent to command "{message.content}" (Message ID {message.id})')
 
                 return
     if keywords:
         for keyword in keywords:
             if keyword['keyword'] in message.content.lower():
-                logging.info(
+                logger.info(
                     f'{message.author} triggered the keyword "{keyword["keyword"]}" (Message ID {message.id})')
                 await message.channel.send(keyword['response'])
-                logging.info(
+                logger.info(
                     f'Response sent to keyword "{keyword["keyword"]}" (Message ID {message.id})')
                 return
 

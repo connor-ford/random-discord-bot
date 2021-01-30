@@ -1,7 +1,4 @@
 __pycache__/
 .venv
 .vscode
-bot/config.py
-bot/data/server_data.json
-bot/logs/*
 TODO

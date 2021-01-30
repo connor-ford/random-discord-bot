@@ -4,6 +4,7 @@ import json
 import logging
 import sys
 from logging.handlers import TimedRotatingFileHandler
+from os import path
 
 import discord
 
@@ -30,9 +31,6 @@ with open('rules.json') as f:
     commands = rules['commands']
     keywords = rules['keywords']
 
-with open('data/server_data.json') as f:
-    server_data = json.load(f)
-
 
 # Discord client
 client = discord.Client()
@@ -53,14 +51,17 @@ async def on_message(message):
 
     guild_id = str(message.guild.id)
 
-    if guild_id not in server_data:
-        server_data[guild_id] = {
+    if path.exists(f'data/guilds/{guild_id}.json'):
+        with open(f'data/guilds/{guild_id}.json') as f:
+                guild_data = json.load(f)
+    else:
+        guild_data = {
             'general': {
                 'prefix': '!'
             }
         }
 
-    prefix = server_data[guild_id]['general']['prefix']
+    prefix = guild_data['general']['prefix']
 
     if commands:
         for command in commands:
@@ -84,7 +85,7 @@ async def on_message(message):
                     response = command_method(
                         params=message.content.lower()[message.content.find(" ") + 1:] if message.content.find(
                             " ") != -1 else "",  # Everything past the first space if it exists, else empty string
-                        guild_data=server_data[guild_id]
+                        guild_data=guild_data
                     )
                     logger.info(
                         f'Method {command["method"]} ran. Called from command {command["command"]}')
@@ -113,10 +114,10 @@ async def on_message(message):
 
                     # If guild data changed, update file
                     if 'guild_data' in response:
-                        server_data[guild_id].update(
+                        guild_data.update(
                             response['guild_data'])
-                        with open('data/server_data.json', 'w') as f:
-                            json.dump(server_data, f)
+                        with open(f'data/guilds/{guild_id}.json', 'w') as f:
+                            json.dump(guild_data, f)
 
                     # Send response
                     await message.channel.send(

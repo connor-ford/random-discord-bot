@@ -23,7 +23,7 @@ def cat_api(params=None, guild_data=None):
         message["message"] = "List of breeds and their IDs:\n```"
 
         for breed in breeds:
-            message["message"] += f'\n{breed["name"]}: {breed["id"].upper()}'
+            message["message"] += f'\n{breed["id"].upper()}: {breed["name"]}'
 
         message["message"] += "```"
 

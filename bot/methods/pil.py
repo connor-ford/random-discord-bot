@@ -1,8 +1,9 @@
-from PIL import Image
-import numpy as np
-from discord import File
 import colorsys
 import random
+
+import numpy as np
+from discord import File
+from PIL import Image
 
 rgb_to_hsv = np.vectorize(colorsys.rgb_to_hsv)
 hsv_to_rgb = np.vectorize(colorsys.hsv_to_rgb)
@@ -30,13 +31,7 @@ def _colorize(image, hue):
 
 
 def worm_on_a_string(params=None, guild_data=None):
-    if not params:
-        return {
-            "error": "USAGE",
-            "message": 'Please provide a hue value between 0 and 360, or the "random" keyword to specify a random hue value.',
-        }
-
-    hue = params.split()[0]
+    hue = params.split()[0] if params else "random"
     if not (hue.isdigit() or hue == "random"):
         return {
             "error": "USAGE",
@@ -54,7 +49,7 @@ def worm_on_a_string(params=None, guild_data=None):
             "message": "Please provide a valid hue value between 0 and 360.",
         }
 
-    with Image.open("data/worm-on-a-string-base.png", "r") as image:
+    with Image.open("resources/worm-on-a-string-base.png", "r") as image:
         new_image = _colorize(image, hue)
         new_image.save("resources/worm-on-a-string.png")
 

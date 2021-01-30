@@ -30,9 +30,7 @@ def cat_api(params=None, guild_data=None):
     # Info
     elif subcommand == "info":
         # Get breed id
-        if len(params.split()) < 2:
-            return {"error": "USAGE"}
-        breed_id = params.split()[1]
+        breed_id = params.split()[1] if len(params.split()) >= 2 else "random"
         if not (breed_id == "random" or len(breed_id) == 4):
             return {"error": "USAGE"}
 
@@ -55,7 +53,7 @@ def cat_api(params=None, guild_data=None):
             if breed == {}:
                 return {
                     "error": "USAGE",
-                    "message": "The code provided did not match any valid code.",
+                    "message": "The code provided did not match any valid breed.",
                 }
 
         # Get info
@@ -96,9 +94,7 @@ def cat_api(params=None, guild_data=None):
     elif subcommand == "image":
 
         # Get breed id
-        if len(params.split()) < 2:
-            return {"error": "USAGE"}
-        breed_id = params.split()[1]
+        breed_id = params.split()[1] if len(params.split()) >= 2 else "random"
         if not (breed_id == "random" or len(breed_id) == 4):
             return {"error": "USAGE"}
 
@@ -157,10 +153,8 @@ def dog_api(params=None, guild_data=None):
     elif subcommand == "image":
 
         # Get breed/sub-breed
-        if len(params.split()) < 2:
-            return {"error": "USAGE"}
-        breed = params.split()[1]
-        subbreed = params.split()[2] if len(params.split()) > 2 else ""
+        breed = params.split()[1] if len(params.split()) >= 2 else "random"
+        subbreed = params.split()[2] if len(params.split()) >= 3 else ""
 
         # Get image
         if breed == "random":  # Random breed
@@ -183,10 +177,7 @@ def dog_api(params=None, guild_data=None):
 
 
 def joke_api(params=None, guild_data=None):
-    if not params:
-        return {"error": "USAGE"}
-
-    subcommand = params.split()[0]
+    subcommand = params.split()[0] if params else "single"
 
     message = {}
 
@@ -194,11 +185,7 @@ def joke_api(params=None, guild_data=None):
     if subcommand != "single" and subcommand != "twopart":
         return {"error": "USAGE"}
 
-    # Get genres, defaulting to "any" if not specified
-    if len(params.split()) > 1:
-        genres = params.split()[1]
-    else:
-        genres = "any"
+    genres = params.split()[1] if len(params.split()) > 1 else "any"
 
     # Send request
     response = requests.get(

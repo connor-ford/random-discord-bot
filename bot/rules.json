@@ -23,7 +23,7 @@
         {
             "command": "joke",
             "description": "Get a single or twopart joke from a specified genre.",
-            "usage": "[single|twopart] [programming|miscellaneous|dark|pun|spooky|christmas|any (optional)]",
+            "usage": "[single|twopart] [any|programming|miscellaneous|dark|pun|spooky|christmas (optional)]",
             "method": "joke_api"
         },
         {
@@ -59,7 +59,7 @@
         {
             "command": "worm",
             "description": "Get an image of a worm on a string, shifted by either a specified or random hue value.",
-            "usage": "[<hue value>|random]",
+            "usage": "[random|<hue value>]",
             "method": "worm_on_a_string"
         }
     ],

@@ -145,13 +145,17 @@ async def on_message(message):
                         with open(f"data/guilds/{guild_id}.json", "w") as f:
                             json.dump(guild_data, f)
 
-                    # If response is larger than 2000 characters, error out
+                    # If response is larger than 2000 characters, send as file
                     if len(response["message"]) > 2000:
-                        await message.channel.send(
-                            "The response message is larger than 2000 characters."
-                        )
-                        logger.error(
-                            f'Character limit exceeded while running command "{message.content}" (Message ID {message.id}'
+                        with open("resources/temp/message.txt", "w") as f:
+                            f.write(response["message"])
+                        with open("resources/temp/message.txt", "rb") as f:
+                            await message.channel.send(
+                                content="The response message is larger than 2000 characters, sending as a text file instead:",
+                                file=discord.File(f, "message.txt"),
+                            )
+                        logger.info(
+                            f'Character limit exceeded while running command "{message.content}" (Message ID {message.id})'
                         )
                         return
 

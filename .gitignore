@@ -128,11 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Logs
-logs/log.txt
-
-# Config
-config.py
-
-# Data
-data/server_data.json
+bot/config.py
+bot/data/server_data.json
+bot/logs/*
+TODO

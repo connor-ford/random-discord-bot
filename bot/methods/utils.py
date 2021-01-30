@@ -1,24 +1,6 @@
 import json
 
 
-def list_commands(params=None, guild_data=None):
-    with open("rules.json") as f:
-        commands = json.load(f)["commands"]
-
-    message = {}
-    message["message"] = "List of commands and their descriptions:\n```"
-
-    for command in commands:
-        message[
-            "message"
-        ] += f'\n{guild_data["general"]["prefix"]}{command["command"]} - ' + (
-            f'{command["description"]}' if "description" in command else ""
-        )
-    message["message"] += "\n```"
-
-    return message
-
-
 def change_prefix(params=None, guild_data=None):
     if not params:
         return {"error": "USAGE"}
@@ -67,4 +49,22 @@ def get_usage(params=None, guild_data=None):
         message[
             "message"
         ] += f'\n`{guild_data["general"]["prefix"]}{found_command["command"]} {usage}`'
+    return message
+
+
+def list_commands(params=None, guild_data=None):
+    with open("rules.json") as f:
+        commands = json.load(f)["commands"]
+
+    message = {}
+    message["message"] = "List of commands and their descriptions:\n```"
+
+    for command in commands:
+        message[
+            "message"
+        ] += f'\n{guild_data["general"]["prefix"]}{command["command"]} - ' + (
+            f'{command["description"]}' if "description" in command else ""
+        )
+    message["message"] += "\n```"
+
     return message

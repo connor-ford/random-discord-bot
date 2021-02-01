@@ -9,7 +9,7 @@ from os import path
 
 import discord
 
-from config import TOKEN
+from config import TOKEN, LOG_STDOUT, LOG_FILE
 from methods.api import cat_api, dog_api, joke_api
 from methods.keywords import keywords
 from methods.minecraft import find_mc_username, grab_mc_skin
@@ -29,16 +29,18 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # File
-fileHandler = TimedRotatingFileHandler(
-    "logs/random_discord_bot.log", when="midnight", interval=1
-)
-fileHandler.setFormatter(formatter)
-logger.addHandler(fileHandler)
+if LOG_FILE:
+    fileHandler = TimedRotatingFileHandler(
+        "logs/random_discord_bot.log", when="midnight", interval=1
+    )
+    fileHandler.setFormatter(formatter)
+    logger.addHandler(fileHandler)
 
 # Stdout
-consoleHandler = logging.StreamHandler(sys.stdout)
-consoleHandler.setFormatter(formatter)
-logger.addHandler(consoleHandler)
+if LOG_STDOUT:
+    consoleHandler = logging.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(formatter)
+    logger.addHandler(consoleHandler)
 
 # Parse commands
 with open("commands.json") as f:

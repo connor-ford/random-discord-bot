@@ -25,13 +25,20 @@ from methods.utils import (
 
 # Init logging
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
-handler = TimedRotatingFileHandler(
-    "logs/random_discord_bot.log", when="midnight", interval=1
-)
-handler.setFormatter(formatter)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-logger.addHandler(handler)
+
+# File
+fileHandler = TimedRotatingFileHandler(
+    "logs/random_discord_bot.log", when="midnight", interval=1
+)
+fileHandler.setFormatter(formatter)
+logger.addHandler(fileHandler)
+
+# Stdout
+consoleHandler = logging.StreamHandler(sys.stdout)
+consoleHandler.setFormatter(formatter)
+logger.addHandler(consoleHandler)
 
 # Parse commands
 with open("commands.json") as f:

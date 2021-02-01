@@ -9,19 +9,13 @@ from os import path
 
 import discord
 
-from config import TOKEN, LOG_STDOUT, LOG_FILE
+from config import LOG_FILE, LOG_STDOUT, TOKEN
 from methods.api import cat_api, dog_api, joke_api
 from methods.keywords import keywords
 from methods.minecraft import find_mc_username, grab_mc_skin
 from methods.pil import worm_on_a_string
-from methods.utils import (
-    change_prefix,
-    flip_coin,
-    get_usage,
-    list_commands,
-    random_value,
-    roll_die,
-)
+from methods.randoms import flip_coin, random_value, roll_die
+from methods.utils import change_prefix, get_usage, list_commands
 
 # Init logging
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")

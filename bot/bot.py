@@ -49,7 +49,7 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    logger.info("%s has connected." % (client.user))
+    logger.info(f"{client.user} has connected.")
     # Changes activity to a random line in statuses.txt
     await client.change_presence(
         activity=discord.Activity(
@@ -120,7 +120,7 @@ async def on_message(message):
                             for usage in usages:
                                 response += f'\n`{prefix}{command["command"]} {usage}`'
                             await message.channel.send(response)
-                            logger.warning(
+                            logger.info(
                                 f'Usage error while running command "{message.content}" (Message ID {message.id})'
                                 + (
                                     f': {response["message"]}'
@@ -159,7 +159,7 @@ async def on_message(message):
                                 content="The response message is larger than 2000 characters, sending as a text file instead:",
                                 file=discord.File(f, "message.txt"),
                             )
-                        logger.debug(
+                        logger.info(
                             f'Character limit exceeded while running command "{message.content}" (Message ID {message.id})'
                         )
                         return
@@ -170,7 +170,7 @@ async def on_message(message):
                         embed=response["embed"] if "embed" in response else None,
                         file=response["file"] if "file" in response else None,
                     )
-                    logger.debug(
+                    logger.info(
                         f'Response sent to command "{message.content}" (Message ID {message.id})'
                     )
 
@@ -189,8 +189,8 @@ async def on_message(message):
                 response = response.replace("$CHANNEL$", message.channel.name)
                 response = response.replace("$GUILD$", message.guild.name)
                 await message.channel.send(response)
-                logger.debug(
-                    f'Response {response} sent to keyword "{keyword}" (Message ID {message.id})'
+                logger.info(
+                    f'Response sent to keyword "{keyword}" (Message ID {message.id})'
                 )
                 return
 

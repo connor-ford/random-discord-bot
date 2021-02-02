@@ -30,7 +30,7 @@ def _colorize(image, hue):
     return new_img
 
 
-def worm_on_a_string(params=None, guild_data=None):
+def worm_on_a_string(params=None):
     hue = params.split()[0].lower() if params else "random"
     if not (hue.isdigit() or hue == "random"):
         return {

@@ -114,7 +114,7 @@ def _get_cat_gif():
     return {"message": response.json()[0]["url"]}
 
 
-def cat_api(params=None, guild_data=None):
+def cat_api(params=None):
     if not params:
         return {"error": "USAGE"}
 
@@ -181,7 +181,7 @@ def _get_dog_image(params=None):
     return {"message": response.json()["message"]}
 
 
-def dog_api(params=None, guild_data=None):
+def dog_api(params=None):
     if not params:
         return {"error": "USAGE"}
 
@@ -200,7 +200,7 @@ def dog_api(params=None, guild_data=None):
         return {"error": "USAGE"}
 
 
-def joke_api(params=None, guild_data=None):
+def joke_api(params=None):
     subcommand = params.split()[0].lower() if params else "single"
 
     message = {}

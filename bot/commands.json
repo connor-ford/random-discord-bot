@@ -1,0 +1,90 @@
+{
+  "commands": [
+    {
+      "command": "cat",
+      "description": "List breeds of cats and their IDs, check info or get an image of a random or specified breed, or random gifs of cats.",
+      "usage": [
+        "breeds",
+        "info [random|<breed ID> (default random)]",
+        "image [random|<breed ID> (default random)]",
+        "gif"
+      ],
+      "method": "cat_api"
+    },
+    {
+      "command": "flip",
+      "description": "Flip a specified amount of coins.",
+      "usage": "<amount (default 1)>",
+      "method": "flip_coin"
+    },
+    {
+      "command": "dog",
+      "description": "List breeds of dogs, or get an image of a random or specified breed.",
+      "usage": [
+        "breeds",
+        "image [random|<breed> (default random)] <sub-breed (optional)>"
+      ],
+      "method": "dog_api"
+    },
+    {
+      "command": "joke",
+      "description": "Get a single or twopart joke from a specified genre.",
+      "usage": "[single|twopart] [any|programming|miscellaneous|dark|pun|spooky|christmas (default any)]",
+      "method": "joke_api"
+    },
+    {
+      "command": "keywords",
+      "description": "Get a list of server keywords, add a keyword or remove a keyword. Supported Variables: $NAME$, $NICK$, $ID$, $CHANNEL$, and $GUILD$.",
+      "usage": ["list", "add <keyword> <response>", "remove <keyword>"],
+      "method": "keywords"
+    },
+    {
+      "command": "list",
+      "description": "List all available commands.",
+      "usage": "",
+      "method": "list_commands"
+    },
+    {
+      "command": "mcskin",
+      "description": "Grabs a Minecraft user's skin file.",
+      "usage": "<username|UUID>",
+      "method": "grab_mc_skin"
+    },
+    {
+      "command": "mcuser",
+      "description": "Gets information about the supplied Minecraft user.",
+      "usage": "<username|UUID>",
+      "method": "find_mc_username"
+    },
+    {
+      "command": "prefix",
+      "description": "Change the prefix used on this server.",
+      "usage": "<new prefix (default rdb-)>",
+      "method": "change_prefix"
+    },
+    {
+      "command": "random",
+      "description": "Get a specified amount of numbers between a specified range.",
+      "usage": "<range minimum (default 1)>-<range maximum (default 10)> <amount (up to 1000, default 1)>",
+      "method": "random_value"
+    },
+    {
+      "command": "roll",
+      "description": "Roll a specified amount of dice with a specified amount of faces.",
+      "usage": "<amount of dice (up to 1000, default 1)>d<amount of faces (default 6)>",
+      "method": "roll_die"
+    },
+    {
+      "command": "usage",
+      "description": "Get the usage of the specified command.",
+      "usage": "<command>",
+      "method": "get_usage"
+    },
+    {
+      "command": "worm",
+      "description": "Get an image of a worm on a string, shifted by either a specified or random hue value.",
+      "usage": "[random|<hue value> (default random)]",
+      "method": "worm_on_a_string"
+    }
+  ]
+}

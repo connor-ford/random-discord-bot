@@ -9,37 +9,38 @@ from os import path
 
 import discord
 
-from config import TOKEN
+from config import LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
 from methods.api import cat_api, dog_api, joke_api
+from methods.keywords import keywords
 from methods.minecraft import find_mc_username, grab_mc_skin
 from methods.pil import worm_on_a_string
-from methods.utils import (
-    change_prefix,
-    flip_coin,
-    get_usage,
-    list_commands,
-    random_value,
-    roll_die,
-)
+from methods.randoms import flip_coin, random_value, roll_die
+from methods.utils import change_prefix, get_usage, list_commands
 
 # Init logging
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
-handler = TimedRotatingFileHandler(
-    "logs/random_discord_bot.log", when="midnight", interval=1
-)
-handler.setFormatter(formatter)
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
-# Parse rules.json
-commands = []
-keywords = []
+# File
+if LOG_LEVEL_FILE:
+    fileHandler = TimedRotatingFileHandler(
+        "logs/random_discord_bot.log", when="midnight", interval=1
+    )
+    fileHandler.setFormatter(formatter)
+    fileHandler.setLevel(LOG_LEVEL_FILE)
+    logger.addHandler(fileHandler)
 
-with open("rules.json") as f:
-    rules = json.load(f)
-    commands = rules["commands"]
-    keywords = rules["keywords"]
+# Stdout
+if LOG_LEVEL_STDOUT:
+    consoleHandler = logging.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(formatter)
+    consoleHandler.setLevel(LOG_LEVEL_STDOUT)
+    logger.addHandler(consoleHandler)
+
+# Parse commands
+with open("commands.json") as f:
+    commands = json.load(f)["commands"]
 
 
 # Discord client
@@ -70,9 +71,9 @@ async def on_message(message):
         with open(f"data/guilds/{guild_id}.json") as f:
             guild_data = json.load(f)
     else:
-        guild_data = {"general": {"prefix": "rdb-"}}
+        guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
 
-    prefix = guild_data["general"]["prefix"]
+    prefix = guild_data["general"]["prefix"].lower()
 
     if commands:
         for command in commands:
@@ -95,12 +96,12 @@ async def on_message(message):
                         )
                         return
                     response = command_method(
-                        params=message.content.lower()[message.content.find(" ") + 1 :]
+                        params=message.content[message.content.find(" ") + 1 :]
                         if message.content.find(" ") != -1
                         else "",  # Everything past the first space if it exists, else empty string
                         guild_data=guild_data,
                     )
-                    logger.info(
+                    logger.debug(
                         f'Method {command["method"]} ran. Called from command {command["command"]}'
                     )
 
@@ -150,7 +151,7 @@ async def on_message(message):
                             json.dump(guild_data, f)
 
                     # If response is larger than 2000 characters, send as file
-                    if len(response["message"]) > 2000:
+                    if "message" in response and len(response["message"]) > 2000:
                         with open("resources/temp/message.txt", "w") as f:
                             f.write(response["message"])
                         with open("resources/temp/message.txt", "rb") as f:
@@ -158,7 +159,7 @@ async def on_message(message):
                                 content="The response message is larger than 2000 characters, sending as a text file instead:",
                                 file=discord.File(f, "message.txt"),
                             )
-                        logger.info(
+                        logger.debug(
                             f'Character limit exceeded while running command "{message.content}" (Message ID {message.id})'
                         )
                         return
@@ -169,20 +170,27 @@ async def on_message(message):
                         embed=response["embed"] if "embed" in response else None,
                         file=response["file"] if "file" in response else None,
                     )
-                    logger.info(
+                    logger.debug(
                         f'Response sent to command "{message.content}" (Message ID {message.id})'
                     )
 
                 return
-    if keywords:
-        for keyword in keywords:
-            if keyword["keyword"] in message.content.lower():
+    if guild_data["keywords"]:
+        for keyword, response in guild_data["keywords"].items():
+            # If keyword is found in the message
+            if keyword in message.content.lower():
                 logger.info(
-                    f'{message.author} triggered the keyword "{keyword["keyword"]}" (Message ID {message.id})'
+                    f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
                 )
-                await message.channel.send(keyword["response"])
-                logger.info(
-                    f'Response sent to keyword "{keyword["keyword"]}" (Message ID {message.id})'
+                # Substitute variables with their values
+                response = response.replace("$NAME$", message.author.name)
+                response = response.replace("$NICK$", message.author.nick)
+                response = response.replace("$ID$", f"<@{message.author.id}>")
+                response = response.replace("$CHANNEL$", message.channel.name)
+                response = response.replace("$GUILD$", message.guild.name)
+                await message.channel.send(response)
+                logger.debug(
+                    f'Response {response} sent to keyword "{keyword}" (Message ID {message.id})'
                 )
                 return
 

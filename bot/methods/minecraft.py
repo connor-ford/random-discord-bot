@@ -14,9 +14,9 @@ def find_mc_username(params=None, guild_data=None):
 
     # Check if UUID
     try:
-        mc_uuid = str(UUID(params.split()[0], version=4))
+        mc_uuid = str(UUID(params.split()[0].lower(), version=4))
     except ValueError:
-        mc_username = params.split()[0]
+        mc_username = params.split()[0].lower()
 
     # If not UUID, get UUID
     if mc_username:
@@ -77,9 +77,9 @@ def grab_mc_skin(params=None, guild_data=None):
 
     # Check if UUID
     try:
-        mc_uuid = str(UUID(params.split()[0], version=4))
+        mc_uuid = str(UUID(params.split()[0].lower(), version=4))
     except ValueError:
-        mc_username = params.split()[0]
+        mc_username = params.split()[0].lower()
 
     # If not UUID, get UUID
     if mc_username:

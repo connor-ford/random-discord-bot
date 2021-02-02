@@ -177,7 +177,6 @@ async def on_message(message):
                 return
     if guild_data["keywords"]:
         sorted_keywords = sorted(guild_data["keywords"].keys(), key=len, reverse=True)
-        print(sorted_keywords)
         for keyword in sorted_keywords:
             # If keyword is found in the message
             if keyword in message.content.lower():

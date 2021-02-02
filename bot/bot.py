@@ -176,12 +176,15 @@ async def on_message(message):
 
                 return
     if guild_data["keywords"]:
-        for keyword, response in guild_data["keywords"].items():
+        sorted_keywords = sorted(guild_data["keywords"].keys(), key=len, reverse=True)
+        print(sorted_keywords)
+        for keyword in sorted_keywords:
             # If keyword is found in the message
             if keyword in message.content.lower():
                 logger.info(
                     f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
                 )
+                response = guild_data["keywords"][keyword]
                 # Substitute variables with their values
                 response = response.replace("$NAME$", message.author.name)
                 response = response.replace("$NICK$", message.author.nick)

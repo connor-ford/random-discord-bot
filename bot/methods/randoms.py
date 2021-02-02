@@ -39,7 +39,7 @@ def random_value(params=None, guild_data=None):
 
 
 def roll_die(params=None, guild_data=None):
-    dice = params.split()[0] if params else "1d6"
+    dice = params.split()[0].lower() if params else "1d6"
     try:
         amount, faces = list(map(int, dice.split("d")))
     except ValueError:

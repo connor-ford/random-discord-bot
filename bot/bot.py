@@ -71,7 +71,7 @@ async def on_message(message):
     else:
         guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
 
-    prefix = guild_data["general"]["prefix"]
+    prefix = guild_data["general"]["prefix"].lower()
 
     if commands:
         for command in commands:
@@ -94,7 +94,7 @@ async def on_message(message):
                         )
                         return
                     response = command_method(
-                        params=message.content.lower()[message.content.find(" ") + 1 :]
+                        params=message.content[message.content.find(" ") + 1 :]
                         if message.content.find(" ") != -1
                         else "",  # Everything past the first space if it exists, else empty string
                         guild_data=guild_data,
@@ -149,7 +149,7 @@ async def on_message(message):
                             json.dump(guild_data, f)
 
                     # If response is larger than 2000 characters, send as file
-                    if len(response["message"]) > 2000:
+                    if "message" in response and len(response["message"]) > 2000:
                         with open("resources/temp/message.txt", "w") as f:
                             f.write(response["message"])
                         with open("resources/temp/message.txt", "rb") as f:

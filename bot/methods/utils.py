@@ -16,9 +16,9 @@ def get_usage(params=None, guild_data=None):
     if not params:
         return {"error": "USAGE"}
 
-    usage_command = params.split()[0]
+    usage_command = params.split()[0].lower()
 
-    with open("rules.json") as f:
+    with open("commands.json") as f:
         rules = json.load(f)
         commands = rules["commands"]
 

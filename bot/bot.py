@@ -20,6 +20,7 @@ from methods.utils import change_prefix, get_usage, list_commands
 # Init logging
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
 logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 # File
 if LOG_LEVEL_FILE:
@@ -27,14 +28,14 @@ if LOG_LEVEL_FILE:
         "logs/random_discord_bot.log", when="midnight", interval=1
     )
     fileHandler.setFormatter(formatter)
-    fileHandler.setLevel(logging.getLevelName(LOG_LEVEL_FILE))
+    fileHandler.setLevel(LOG_LEVEL_FILE)
     logger.addHandler(fileHandler)
 
 # Stdout
 if LOG_LEVEL_STDOUT:
     consoleHandler = logging.StreamHandler(sys.stdout)
     consoleHandler.setFormatter(formatter)
-    consoleHandler.setLevel(logging.getLevelName(LOG_LEVEL_STDOUT))
+    consoleHandler.setLevel(LOG_LEVEL_STDOUT)
     logger.addHandler(consoleHandler)
 
 # Parse commands

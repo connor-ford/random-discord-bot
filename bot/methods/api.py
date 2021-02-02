@@ -142,6 +142,45 @@ def cat_api(params=None, guild_data=None):
         return {"error": "USAGE"}
 
 
+def _list_dog_breeds():
+    # Get list of breeds
+    response = requests.get(url="https://dog.ceo/api/breeds/list/all")
+    if response.status_code != 200:
+        return {"error": "API", "message": response.text}
+    breeds = response.json()["message"]
+    # Compile message
+    message = {}
+    message["message"] = "List of dog breeds and their sub-breeds:\n```"
+    for breed, subbreeds in breeds.items():
+        if subbreeds:  # If breed has sub-breeds, list them with the breed
+            message["message"] += f'\n{breed.capitalize()}: {", ".join(subbreeds)}'
+        else:  # Else, only display the breed
+            message["message"] += f"\n{breed.capitalize()}"
+    message["message"] += "```"
+    return message
+
+
+def _get_dog_image(params=None):
+    # Get breed/sub-breed
+    breed = params.split()[1].lower() if len(params.split()) >= 2 else "random"
+    subbreed = params.split()[2].lower() if len(params.split()) >= 3 else ""
+
+    # Get image
+    if breed == "random":  # Random breed
+        response = requests.get(url="https://dog.ceo/api/breeds/image/random")
+    else:  # Specified breed
+        response = requests.get(
+            url=f"https://dog.ceo/api/breed/{breed}"
+            + (f"/{subbreed}" if subbreed else "")
+            + "/images/random"
+        )
+    if response.status_code != 200:
+        if response.json()["message"].startswith("Breed not found"):
+            return {"error": "USAGE", "message": response.json()["message"]}
+        return {"error": "API", "message": response.text}
+    return {"message": response.json()["message"]}
+
+
 def dog_api(params=None, guild_data=None):
     if not params:
         return {"error": "USAGE"}
@@ -152,45 +191,13 @@ def dog_api(params=None, guild_data=None):
 
     # Breeds
     if subcommand == "breeds":
-        # Get list of breeds
-        response = requests.get(url="https://dog.ceo/api/breeds/list/all")
-        if response.status_code != 200:
-            return {"error": "API", "message": response.text}
-        breeds = response.json()["message"]
-        # Compile message
-        message["message"] = "List of dog breeds and their sub-breeds:\n```"
-        for breed, subbreeds in breeds.items():
-            if subbreeds:  # If breed has sub-breeds, list them with the breed
-                message["message"] += f'\n{breed.capitalize()}: {", ".join(subbreeds)}'
-            else:  # Else, only display the breed
-                message["message"] += f"\n{breed.capitalize()}"
-        message["message"] += "```"
+        return _list_dog_breeds()
 
     # Image
     elif subcommand == "image":
-
-        # Get breed/sub-breed
-        breed = params.split()[1].lower() if len(params.split()) >= 2 else "random"
-        subbreed = params.split()[2].lower() if len(params.split()) >= 3 else ""
-
-        # Get image
-        if breed == "random":  # Random breed
-            response = requests.get(url="https://dog.ceo/api/breeds/image/random")
-        else:  # Specified breed
-            response = requests.get(
-                url=f"https://dog.ceo/api/breed/{breed}"
-                + (f"/{subbreed}" if subbreed else "")
-                + "/images/random"
-            )
-        if response.status_code != 200:
-            if response.json()["message"].startswith("Breed not found"):
-                return {"error": "USAGE", "message": response.json()["message"]}
-            return {"error": "API", "message": response.text}
-        message["message"] = response.json()["message"]
+        return _get_dog_image(params)
     else:
         return {"error": "USAGE"}
-
-    return message
 
 
 def joke_api(params=None, guild_data=None):

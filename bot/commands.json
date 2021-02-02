@@ -35,7 +35,7 @@
     {
       "command": "keywords",
       "description": "Get a list of server keywords, add a keyword or remove a keyword. Supported Variables: $NAME$, $NICK$, $ID$, $CHANNEL$, and $GUILD$.",
-      "usage": ["list", "add <keyword> <response>", "remove <keyword>"],
+      "usage": ["list", "add <keyword> <response>", "remove <keyword>", "addphrase {<keyphrase>} <response>"],
       "method": "keywords"
     },
     {

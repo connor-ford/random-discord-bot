@@ -28,6 +28,23 @@ def _add_keyword(params=None, guild_data=None):
     return message
 
 
+def _add_keyphrase(params=None, guild_data=None):
+    if not params or not params.startswith("{") or "} " not in params.split("{", 1)[1]:
+        return {"error": "USAGE"}
+
+    keyphrase, response = params.split("{", 1)[1].split("} ", 1)
+    keyphrase = keyphrase.lower()
+
+    message = {}
+    message[
+        "message"
+    ] = f'{"Updated" if keyphrase in guild_data["keywords"] else "Added"} "{keyphrase}" keyphrase with response "{response}".'
+
+    guild_data["keywords"][keyphrase] = response
+    message["guild_data"] = guild_data
+    return message
+
+
 def _remove_keyword(params=None, guild_data=None):
     if not params:
         return {"error": "USAGE"}
@@ -48,10 +65,12 @@ def keywords(params=None, guild_data=None):
     subcommand = params.split()[0].lower()
 
     if subcommand == "list":
-        return _list_keywords(guild_data)
+        return _list_keywords(guild_data=guild_data)
     elif subcommand == "add":
-        return _add_keyword(params.split(" ", 1)[1], guild_data)
+        return _add_keyword(params=params.split(" ", 1)[1], guild_data=guild_data)
+    elif subcommand == "addphrase":
+        return _add_keyphrase(params=params.split(" ", 1)[1], guild_data=guild_data)
     elif subcommand == "remove":
-        return _remove_keyword(params.split(" ", 1)[1], guild_data)
+        return _remove_keyword(params=params.split(" ", 1)[1], guild_data=guild_data)
     else:
         return {"error": "USAGE"}

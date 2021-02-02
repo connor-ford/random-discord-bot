@@ -1,11 +1,14 @@
 def _list_keywords(guild_data=None):
     message = {}
-    message[
-        "message"
-    ] = f"Listing {len(guild_data['keywords'])} keywords and their responses:\n```"
-    for keyword, response in guild_data["keywords"].items():
-        message["message"] += f"{keyword}: {repr(response)}\n"
-    message["message"] += "```"
+    if len(guild_data["keywords"]) == 0:
+        message["message"] = "There are currently no keywords for this server."
+    else:
+        message[
+            "message"
+        ] = f"Listing {len(guild_data['keywords'])} keywords and their responses:\n```"
+        for keyword, response in guild_data["keywords"].items():
+            message["message"] += f"{keyword}: {repr(response)}\n"
+        message["message"] += "```"
     return message
 
 

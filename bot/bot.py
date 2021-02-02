@@ -9,7 +9,7 @@ from os import path
 
 import discord
 
-from config import LOG_FILE, LOG_STDOUT, TOKEN
+from config import LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
 from methods.api import cat_api, dog_api, joke_api
 from methods.keywords import keywords
 from methods.minecraft import find_mc_username, grab_mc_skin
@@ -20,20 +20,21 @@ from methods.utils import change_prefix, get_usage, list_commands
 # Init logging
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 # File
-if LOG_FILE:
+if LOG_LEVEL_FILE:
     fileHandler = TimedRotatingFileHandler(
         "logs/random_discord_bot.log", when="midnight", interval=1
     )
     fileHandler.setFormatter(formatter)
+    fileHandler.setLevel(logging.getLevelName(LOG_LEVEL_FILE))
     logger.addHandler(fileHandler)
 
 # Stdout
-if LOG_STDOUT:
+if LOG_LEVEL_STDOUT:
     consoleHandler = logging.StreamHandler(sys.stdout)
     consoleHandler.setFormatter(formatter)
+    consoleHandler.setLevel(logging.getLevelName(LOG_LEVEL_STDOUT))
     logger.addHandler(consoleHandler)
 
 # Parse commands
@@ -99,7 +100,7 @@ async def on_message(message):
                         else "",  # Everything past the first space if it exists, else empty string
                         guild_data=guild_data,
                     )
-                    logger.info(
+                    logger.debug(
                         f'Method {command["method"]} ran. Called from command {command["command"]}'
                     )
 
@@ -157,7 +158,7 @@ async def on_message(message):
                                 content="The response message is larger than 2000 characters, sending as a text file instead:",
                                 file=discord.File(f, "message.txt"),
                             )
-                        logger.info(
+                        logger.debug(
                             f'Character limit exceeded while running command "{message.content}" (Message ID {message.id})'
                         )
                         return
@@ -168,7 +169,7 @@ async def on_message(message):
                         embed=response["embed"] if "embed" in response else None,
                         file=response["file"] if "file" in response else None,
                     )
-                    logger.info(
+                    logger.debug(
                         f'Response sent to command "{message.content}" (Message ID {message.id})'
                     )
 
@@ -187,7 +188,7 @@ async def on_message(message):
                 response = response.replace("$CHANNEL$", message.channel.name)
                 response = response.replace("$GUILD$", message.guild.name)
                 await message.channel.send(response)
-                logger.info(
+                logger.debug(
                     f'Response {response} sent to keyword "{keyword}" (Message ID {message.id})'
                 )
                 return

@@ -1,3 +1,4 @@
 TOKEN = "<Your Bot Token Here>"
-LOG_STDOUT = True
-LOG_FILE = True
+
+LOG_LEVEL_STDOUT = "INFO" # Console log level
+LOG_LEVEL_FILE = "DEBUG" # File log level

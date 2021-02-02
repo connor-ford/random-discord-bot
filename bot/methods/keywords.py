@@ -18,6 +18,9 @@ def _add_keyword(params=None, guild_data=None):
     keyword, response = params.split(" ", 1)
     keyword = keyword.lower()
 
+    if not keyword or not response:
+        return {"error": "USAGE", "message": "Your keyword and/or response cannot be empty."}
+
     message = {}
     message[
         "message"
@@ -34,6 +37,9 @@ def _add_keyphrase(params=None, guild_data=None):
 
     keyphrase, response = params.split("{", 1)[1].split("} ", 1)
     keyphrase = keyphrase.lower()
+
+    if not keyphrase or not response:
+        return {"error": "USAGE", "message": "Your keyphrase and/or response cannot be empty."}
 
     message = {}
     message[

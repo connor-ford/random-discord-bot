@@ -9,7 +9,7 @@ from os import path
 
 import discord
 
-from config import LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
+from config import LOG_CACHE, LOG_KEYWORDS, LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
 from methods.api import cat_api, dog_api, joke_api
 from methods.keywords import keywords
 from methods.minecraft import find_mc_username, grab_mc_skin
@@ -37,6 +37,11 @@ if LOG_LEVEL_STDOUT:
     consoleHandler.setFormatter(formatter)
     consoleHandler.setLevel(LOG_LEVEL_STDOUT)
     logger.addHandler(consoleHandler)
+
+logger.info(f"FILE Log Level set to {LOG_LEVEL_FILE}.")
+logger.info(f"STDOUT Log Level set to {LOG_LEVEL_STDOUT}.")
+logger.info(f"Cache logging {'ENABLED' if LOG_CACHE else 'DISABLED'}.")
+logger.info(f"Keyword logging {'ENABLED' if LOG_KEYWORDS else 'DISABLED'}.")
 
 # Parse commands
 with open("commands.json") as f:
@@ -180,9 +185,10 @@ async def on_message(message):
         for keyword in sorted_keywords:
             # If keyword is found in the message
             if keyword in message.content.lower():
-                logger.info(
-                    f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
-                )
+                if LOG_KEYWORDS:
+                    logger.info(
+                        f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
+                    )
                 response = guild_data["keywords"][keyword]
                 # Substitute variables with their values
                 response = response.replace("$NAME$", message.author.name)
@@ -191,9 +197,10 @@ async def on_message(message):
                 response = response.replace("$CHANNEL$", message.channel.name)
                 response = response.replace("$GUILD$", message.guild.name)
                 await message.channel.send(response)
-                logger.info(
-                    f'Response sent to keyword "{keyword}" (Message ID {message.id})'
-                )
+                if LOG_KEYWORDS:
+                    logger.info(
+                        f'Response sent to keyword "{keyword}" (Message ID {message.id})'
+                    )
                 return
 
 

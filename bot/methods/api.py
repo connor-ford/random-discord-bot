@@ -1,17 +1,22 @@
 import random
 
 import requests
+from cache import cache
 from discord import Embed
 
 
 def _list_cat_breeds():
-    response = requests.get(url="https://api.thecatapi.com/v1/breeds")
-    if response.status_code != 200:
-        return {"error": "API", "message": response.text}
+
+    breeds = cache.get("cat_breeds")
+    if not breeds:
+        response = requests.get(url="https://api.thecatapi.com/v1/breeds")
+        if response.status_code != 200:
+            return {"error": "API", "message": response.text}
+
+        breeds = response.json()
+        cache.add("cat_breeds", breeds, 1440)
 
     message = {}
-    breeds = response.json()
-
     message["message"] = "List of breeds and their IDs:\n```"
 
     for breed in breeds:
@@ -28,11 +33,14 @@ def _get_cat_info(params=None):
         return {"error": "USAGE"}
 
     # Get list of breeds
-    response = requests.get(url="https://api.thecatapi.com/v1/breeds")
-    if response.status_code != 200:
-        return {"error": "API", "message": response.text}
+    breeds = cache.get("cat_breeds")
+    if not breeds:
+        response = requests.get(url="https://api.thecatapi.com/v1/breeds")
+        if response.status_code != 200:
+            return {"error": "API", "message": response.text}
 
-    breeds = response.json()
+        breeds = response.json()
+        cache.add("cat_breeds", breeds, 1440)
 
     # If random, pick random breed, else use breed ID
     breed = {}
@@ -144,10 +152,13 @@ def cat_api(params=None, guild_data=None):
 
 def _list_dog_breeds():
     # Get list of breeds
-    response = requests.get(url="https://dog.ceo/api/breeds/list/all")
-    if response.status_code != 200:
-        return {"error": "API", "message": response.text}
-    breeds = response.json()["message"]
+    breeds = cache.get("dog_breeds")
+    if not breeds:
+        response = requests.get(url="https://dog.ceo/api/breeds/list/all")
+        if response.status_code != 200:
+            return {"error": "API", "message": response.text}
+        breeds = response.json()["message"]
+        cache.add("dog_breeds", breeds, 1440)
     # Compile message
     message = {}
     message["message"] = "List of dog breeds and their sub-breeds:\n```"

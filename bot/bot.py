@@ -9,6 +9,7 @@ from os import path
 
 import discord
 
+from cache import cache
 from config import LOG_CACHE, LOG_KEYWORDS, LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
 from methods.api import cat_api, dog_api, joke_api
 from methods.keywords import keywords
@@ -44,8 +45,11 @@ logger.info(f"Cache logging {'ENABLED' if LOG_CACHE else 'DISABLED'}.")
 logger.info(f"Keyword logging {'ENABLED' if LOG_KEYWORDS else 'DISABLED'}.")
 
 # Parse commands
-with open("commands.json") as f:
-    commands = json.load(f)["commands"]
+commands = cache.get("commands")
+if not commands:
+    with open("commands.json") as f:
+        commands = json.load(f)["commands"]
+    cache.add("commands", commands, 1440)
 
 
 # Discord client
@@ -72,11 +76,14 @@ async def on_message(message):
 
     guild_id = str(message.guild.id)
 
-    if path.exists(f"data/guilds/{guild_id}.json"):
-        with open(f"data/guilds/{guild_id}.json") as f:
-            guild_data = json.load(f)
-    else:
-        guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
+    guild_data = cache.get(guild_id)
+    if not guild_data:
+        if path.exists(f"data/guilds/{guild_id}.json"):
+            with open(f"data/guilds/{guild_id}.json") as f:
+                guild_data = json.load(f)
+        else:
+            guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
+        cache.add(guild_id, guild_data, 60)
 
     prefix = guild_data["general"]["prefix"].lower()
 
@@ -152,6 +159,7 @@ async def on_message(message):
                     # If guild data changed, update file
                     if "guild_data" in response:
                         guild_data.update(response["guild_data"])
+                        cache.add(guild_id, guild_data, 60)
                         with open(f"data/guilds/{guild_id}.json", "w") as f:
                             json.dump(guild_data, f)
 

@@ -1,5 +1,7 @@
 import json
 
+from cache import cache
+
 
 def change_prefix(params=None, guild_data=None):
     if not params:
@@ -18,9 +20,11 @@ def get_usage(params=None, guild_data=None):
 
     usage_command = params.split()[0].lower()
 
-    with open("commands.json") as f:
-        rules = json.load(f)
-        commands = rules["commands"]
+    commands = cache.get("commands")
+    if not commands:
+        with open("commands.json") as f:
+            commands = json.load(f)["commands"]
+        cache.add("commands", commands, 1440)
 
     found_command = {}
     for command in commands:
@@ -48,8 +52,11 @@ def get_usage(params=None, guild_data=None):
 
 
 def list_commands(params=None, guild_data=None):
-    with open("commands.json") as f:
-        commands = json.load(f)["commands"]
+    commands = cache.get("commands")
+    if not commands:
+        with open("commands.json") as f:
+            commands = json.load(f)["commands"]
+        cache.add("commands", commands, 1440)
 
     message = {}
     message["message"] = "List of commands and their descriptions:\n```"

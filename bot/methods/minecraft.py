@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 import requests
+from cache import cache
 from discord import Embed
 
 
@@ -20,24 +21,33 @@ def find_mc_username(params=None, guild_data=None):
 
     # If not UUID, get UUID
     if mc_username:
+        mc_uuid = cache.get(f"mc_uuid_{mc_username}")
+        if not mc_uuid:
+            response = requests.get(
+                url=f"https://api.mojang.com/users/profiles/minecraft/{mc_username}"
+            )
+            if response.status_code == 204:  # No content = no information
+                return {"message": "The supplied username could not be found."}
+            if response.status_code != 200:
+                return {"error": "API", "message": response.text}
+
+            mc_uuid = str(UUID(response.json()["id"], version=4))
+            cache.add(f"mc_uuid_{mc_username}", mc_uuid, 1440)
+
+    # Get previous names
+    mc_prev_names = cache.get(f"mc_names_{mc_uuid}")
+    if not mc_prev_names:
         response = requests.get(
-            url=f"https://api.mojang.com/users/profiles/minecraft/{mc_username}"
+            url=f"https://api.mojang.com/user/profiles/{mc_uuid}/names"
         )
         if response.status_code == 204:  # No content = no information
-            return {"message": "The supplied username could not be found."}
+            return {"message": "The supplied UUID could not be found."}
         if response.status_code != 200:
             return {"error": "API", "message": response.text}
 
-        mc_uuid = str(UUID(response.json()["id"], version=4))
+        mc_prev_names = response.json()
+        cache.add(f"mc_names_{mc_uuid}", mc_prev_names, 1440)
 
-    # Get previous names
-    response = requests.get(url=f"https://api.mojang.com/user/profiles/{mc_uuid}/names")
-    if response.status_code == 204:  # No content = no information
-        return {"message": "The supplied UUID could not be found."}
-    if response.status_code != 200:
-        return {"error": "API", "message": response.text}
-
-    mc_prev_names = response.json()
     # Proper capitalization of name due to prior lower() of params
     mc_username = mc_prev_names[-1]["name"]
 
@@ -83,19 +93,18 @@ def grab_mc_skin(params=None, guild_data=None):
 
     # If not UUID, get UUID
     if mc_username:
-        response = requests.get(
-            url=f"https://api.mojang.com/users/profiles/minecraft/{mc_username}"
-        )
-        # No content = no information
-        if response.status_code == 204 or (
-            "error" in response.json()
-            and "is invalid" in response.json()["errorMessage"]
-        ):
-            return {"message": "The supplied username could not be found."}
-        if response.status_code != 200:
-            return {"error": "API", "message": response.text}
+        mc_uuid = cache.get(f"mc_uuid_{mc_username}")
+        if not mc_uuid:
+            response = requests.get(
+                url=f"https://api.mojang.com/users/profiles/minecraft/{mc_username}"
+            )
+            if response.status_code == 204:  # No content = no information
+                return {"message": "The supplied username could not be found."}
+            if response.status_code != 200:
+                return {"error": "API", "message": response.text}
 
-        mc_uuid = str(UUID(response.json()["id"], version=4))
+            mc_uuid = str(UUID(response.json()["id"], version=4))
+            cache.add(f"mc_uuid_{mc_username}", mc_uuid, 1440)
 
     # URL to skin
     message = {"message": f"https://crafatar.com/skins/{mc_uuid}"}

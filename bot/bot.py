@@ -9,7 +9,8 @@ from os import path
 
 import discord
 
-from config import LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
+from cache import cache
+from config import LOG_CACHE, LOG_KEYWORDS, LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
 from methods.api import cat_api, dog_api, joke_api
 from methods.keywords import keywords
 from methods.minecraft import find_mc_username, grab_mc_skin
@@ -38,9 +39,17 @@ if LOG_LEVEL_STDOUT:
     consoleHandler.setLevel(LOG_LEVEL_STDOUT)
     logger.addHandler(consoleHandler)
 
+logger.info(f"FILE Log Level set to {LOG_LEVEL_FILE}.")
+logger.info(f"STDOUT Log Level set to {LOG_LEVEL_STDOUT}.")
+logger.info(f"Cache logging {'ENABLED' if LOG_CACHE else 'DISABLED'}.")
+logger.info(f"Keyword logging {'ENABLED' if LOG_KEYWORDS else 'DISABLED'}.")
+
 # Parse commands
-with open("commands.json") as f:
-    commands = json.load(f)["commands"]
+commands = cache.get("commands")
+if not commands:
+    with open("commands.json") as f:
+        commands = json.load(f)["commands"]
+    cache.add("commands", commands, 1440)
 
 
 # Discord client
@@ -67,11 +76,14 @@ async def on_message(message):
 
     guild_id = str(message.guild.id)
 
-    if path.exists(f"data/guilds/{guild_id}.json"):
-        with open(f"data/guilds/{guild_id}.json") as f:
-            guild_data = json.load(f)
-    else:
-        guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
+    guild_data = cache.get(guild_id)
+    if not guild_data:
+        if path.exists(f"data/guilds/{guild_id}.json"):
+            with open(f"data/guilds/{guild_id}.json") as f:
+                guild_data = json.load(f)
+        else:
+            guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
+        cache.add(guild_id, guild_data, 60)
 
     prefix = guild_data["general"]["prefix"].lower()
 
@@ -147,6 +159,7 @@ async def on_message(message):
                     # If guild data changed, update file
                     if "guild_data" in response:
                         guild_data.update(response["guild_data"])
+                        cache.add(guild_id, guild_data, 60)
                         with open(f"data/guilds/{guild_id}.json", "w") as f:
                             json.dump(guild_data, f)
 
@@ -180,9 +193,10 @@ async def on_message(message):
         for keyword in sorted_keywords:
             # If keyword is found in the message
             if keyword in message.content.lower():
-                logger.info(
-                    f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
-                )
+                if LOG_KEYWORDS:
+                    logger.info(
+                        f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
+                    )
                 response = guild_data["keywords"][keyword]
                 # Substitute variables with their values
                 response = response.replace("$NAME$", message.author.name)
@@ -191,9 +205,10 @@ async def on_message(message):
                 response = response.replace("$CHANNEL$", message.channel.name)
                 response = response.replace("$GUILD$", message.guild.name)
                 await message.channel.send(response)
-                logger.info(
-                    f'Response sent to keyword "{keyword}" (Message ID {message.id})'
-                )
+                if LOG_KEYWORDS:
+                    logger.info(
+                        f'Response sent to keyword "{keyword}" (Message ID {message.id})'
+                    )
                 return
 
 

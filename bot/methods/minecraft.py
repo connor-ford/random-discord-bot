@@ -6,7 +6,7 @@ from cache import cache
 from discord import Embed
 
 
-def find_mc_username(params=None, guild_data=None):
+def find_mc_username(params=None, data=None):
     if not params or len(params.split()) > 1:
         return {"error": "USAGE", "message": "Please supply a valid username or UUID."}
 
@@ -78,7 +78,7 @@ def find_mc_username(params=None, guild_data=None):
     return message
 
 
-def grab_mc_skin(params=None, guild_data=None):
+def grab_mc_skin(params=None, data=None):
     if not params or len(params.split()) > 1:
         return {"error": "USAGE", "message": "Please supply a valid username or UUID."}
 

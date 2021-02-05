@@ -74,18 +74,23 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    guild_id = str(message.guild.id)
+    # If sent in a guild, use guild data. Otherwise, use user data.
+    if message.guild:
+        id = str(message.guild.id)
+        data_path = f"data/guilds/{id}.json"
+    else:
+        id = str(message.author.id)
+        data_path = f"data/users/{id}.json"
 
-    guild_data = cache.get(guild_id)
-    if not guild_data:
-        if path.exists(f"data/guilds/{guild_id}.json"):
-            with open(f"data/guilds/{guild_id}.json") as f:
-                guild_data = json.load(f)
+    data = cache.get(f"{'g' if message.guild else 'u'}_id")
+    if not data:
+        if path.exists(data_path):
+            data = json.load(open(data_path))
         else:
-            guild_data = {"general": {"prefix": "rdb-"}, "keywords": {}}
-        cache.add(guild_id, guild_data, 60)
+            data = {"general": {"prefix": "rdb-"}, "keywords": {}}
+        cache.add(f"{'g' if message.guild else 'u'}_id", data, 60)
 
-    prefix = guild_data["general"]["prefix"].lower()
+    prefix = data["general"]["prefix"].lower()
 
     if commands:
         for command in commands:
@@ -111,7 +116,7 @@ async def on_message(message):
                         params=message.content[message.content.find(" ") + 1 :]
                         if message.content.find(" ") != -1
                         else "",  # Everything past the first space if it exists, else empty string
-                        guild_data=guild_data,
+                        data=data,
                     )
                     logger.debug(
                         f'Method {command["method"]} ran. Called from command {command["command"]}'
@@ -157,11 +162,11 @@ async def on_message(message):
                             return
 
                     # If guild data changed, update file
-                    if "guild_data" in response:
-                        guild_data.update(response["guild_data"])
-                        cache.add(guild_id, guild_data, 60)
-                        with open(f"data/guilds/{guild_id}.json", "w") as f:
-                            json.dump(guild_data, f)
+                    if "data" in response:
+                        data.update(response["data"])
+                        cache.add(f"{'g' if message.guild else 'u'}_id", data, 60)
+                        with open(data_path, "w") as f:
+                            json.dump(data, f)
 
                     # If response is larger than 2000 characters, send as file
                     if "message" in response and len(response["message"]) > 2000:
@@ -188,8 +193,8 @@ async def on_message(message):
                     )
 
                 return
-    if guild_data["keywords"]:
-        sorted_keywords = sorted(guild_data["keywords"].keys(), key=len, reverse=True)
+    if data["keywords"]:
+        sorted_keywords = sorted(data["keywords"].keys(), key=len, reverse=True)
         for keyword in sorted_keywords:
             # If keyword is found in the message
             if keyword in message.content.lower():
@@ -197,13 +202,15 @@ async def on_message(message):
                     logger.info(
                         f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
                     )
-                response = guild_data["keywords"][keyword]
+                response = data["keywords"][keyword]
                 # Substitute variables with their values
                 response = response.replace("$NAME$", message.author.name)
-                response = response.replace("$NICK$", message.author.nick)
                 response = response.replace("$ID$", f"<@{message.author.id}>")
-                response = response.replace("$CHANNEL$", message.channel.name)
-                response = response.replace("$GUILD$", message.guild.name)
+                # Only used if in guild
+                if message.guild:
+                    response = response.replace("$NICK$", message.author.nick)
+                    response = response.replace("$CHANNEL$", message.channel.name)
+                    response = response.replace("$GUILD$", message.guild.name)
                 await message.channel.send(response)
                 if LOG_KEYWORDS:
                     logger.info(

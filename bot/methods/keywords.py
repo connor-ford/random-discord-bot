@@ -1,7 +1,7 @@
 def _list_keywords(data=None):
     message = {}
     if len(data["keywords"]) == 0:
-        message["message"] = "There are currently no keywords for this server."
+        message["message"] = "There are currently no keywords."
     else:
         message[
             "message"

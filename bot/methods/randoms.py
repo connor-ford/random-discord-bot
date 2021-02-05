@@ -1,7 +1,7 @@
 import random
 
 
-def flip_coin(params=None, guild_data=None):
+def flip_coin(params=None, data=None):
     try:
         amount = int(params) if params else 1
     except ValueError:
@@ -16,7 +16,7 @@ def flip_coin(params=None, guild_data=None):
     return message
 
 
-def random_value(params=None, guild_data=None):
+def random_value(params=None, data=None):
     nums = params.split()[0] if params else "1-10"
     if len(nums.split("-")) != 2:
         return {"error": "USAGE"}
@@ -38,7 +38,7 @@ def random_value(params=None, guild_data=None):
     return message
 
 
-def roll_die(params=None, guild_data=None):
+def roll_die(params=None, data=None):
     dice = params.split()[0].lower() if params else "1d6"
     try:
         amount, faces = list(map(int, dice.split("d")))

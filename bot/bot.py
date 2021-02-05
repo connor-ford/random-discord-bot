@@ -76,19 +76,19 @@ async def on_message(message):
 
     # If sent in a guild, use guild data. Otherwise, use user data.
     if message.guild:
-        id = str(message.guild.id)
+        id = str(f"g_{message.guild.id}")
         data_path = f"data/guilds/{id}.json"
     else:
-        id = str(message.author.id)
+        id = str(f"u_{message.author.id}")
         data_path = f"data/users/{id}.json"
 
-    data = cache.get(f"{'g' if message.guild else 'u'}_id")
+    data = cache.get(id)
     if not data:
         if path.exists(data_path):
             data = json.load(open(data_path))
         else:
             data = {"general": {"prefix": "rdb-"}, "keywords": {}}
-        cache.add(f"{'g' if message.guild else 'u'}_id", data, 60)
+        cache.add(id, data, 60)
 
     prefix = data["general"]["prefix"].lower()
 
@@ -97,7 +97,7 @@ async def on_message(message):
             # If message is the command
             if message.content.lower().startswith(prefix + command["command"]):
                 logger.info(
-                    f'{message.author} ran the command "{message.content}" (Message ID {message.id})'
+                    f'{id} - {message.author} ran the command "{message.content}" (Message ID {message.id})'
                 )
 
                 # Send specified response, if exists
@@ -109,7 +109,7 @@ async def on_message(message):
                     command_method = getattr(sys.modules[__name__], command["method"])
                     if not command_method:
                         logger.error(
-                            f'Method {command["method"]} not found. Called from command {command["command"]}'
+                            f'{id} - Method {command["method"]} not found. Called from command {command["command"]}'
                         )
                         return
                     response = command_method(
@@ -119,7 +119,7 @@ async def on_message(message):
                         data=data,
                     )
                     logger.debug(
-                        f'Method {command["method"]} ran. Called from command {command["command"]}'
+                        f'{id} - Method {command["method"]} ran. Called from command {command["command"]}'
                     )
 
                     # Returned error
@@ -138,7 +138,7 @@ async def on_message(message):
                                 response += f'\n`{prefix}{command["command"]} {usage}`'
                             await message.channel.send(response)
                             logger.info(
-                                f'Usage error while running command "{message.content}" (Message ID {message.id})'
+                                f'{id} - Usage error while running command "{message.content}" (Message ID {message.id})'
                                 + (
                                     f': {response["message"]}'
                                     if "message" in response
@@ -152,7 +152,7 @@ async def on_message(message):
                                 "An error has occurred with the API while performing this command. Check logs for more info."
                             )
                             logger.error(
-                                f'API Error while running command "{message.content}" (Message ID {message.id})'
+                                f'{id} - API Error while running command "{message.content}" (Message ID {message.id})'
                                 + (
                                     f': {response["message"]}'
                                     if "message" in response
@@ -164,7 +164,7 @@ async def on_message(message):
                     # If guild data changed, update file
                     if "data" in response:
                         data.update(response["data"])
-                        cache.add(f"{'g' if message.guild else 'u'}_id", data, 60)
+                        cache.add(id, data, 60)
                         with open(data_path, "w") as f:
                             json.dump(data, f)
 
@@ -178,7 +178,7 @@ async def on_message(message):
                                 file=discord.File(f, "message.txt"),
                             )
                         logger.info(
-                            f'Character limit exceeded while running command "{message.content}" (Message ID {message.id})'
+                            f'{id} - Character limit exceeded while running command "{message.content}" (Message ID {message.id})'
                         )
                         return
 
@@ -189,7 +189,7 @@ async def on_message(message):
                         file=response["file"] if "file" in response else None,
                     )
                     logger.info(
-                        f'Response sent to command "{message.content}" (Message ID {message.id})'
+                        f'{id} - Response sent to command "{message.content}" (Message ID {message.id})'
                     )
 
                 return
@@ -200,7 +200,7 @@ async def on_message(message):
             if keyword in message.content.lower():
                 if LOG_KEYWORDS:
                     logger.info(
-                        f'{message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
+                        f'{id} - {message.author} triggered the keyword "{keyword}" (Message ID {message.id})'
                     )
                 response = data["keywords"][keyword]
                 # Substitute variables with their values
@@ -214,7 +214,7 @@ async def on_message(message):
                 await message.channel.send(response)
                 if LOG_KEYWORDS:
                     logger.info(
-                        f'Response sent to keyword "{keyword}" (Message ID {message.id})'
+                        f'{id} - Response sent to keyword "{keyword}" (Message ID {message.id})'
                     )
                 return
 

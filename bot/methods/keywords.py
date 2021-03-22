@@ -71,6 +71,15 @@ def _remove_keyword(params=None, data=None):
     return message
 
 
+def _purge_keywords(data=None):
+    message = {}
+    message["message"] = f"Purged {len(data['keywords'])} keywords and keyphrases."
+
+    data["keywords"] = {}
+    message["data"] = data
+    return message
+
+
 def keywords(params=None, data=None):
     if not params:
         return {"error": "USAGE"}
@@ -84,5 +93,7 @@ def keywords(params=None, data=None):
         return _add_keyphrase(params=params.split(" ", 1)[1], data=data)
     elif subcommand == "remove":
         return _remove_keyword(params=params.split(" ", 1)[1], data=data)
+    elif subcommand == "purge":
+        return _purge_keywords(data=data)
     else:
         return {"error": "USAGE"}

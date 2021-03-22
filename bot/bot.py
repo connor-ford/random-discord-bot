@@ -197,7 +197,7 @@ async def on_message(message):
         sorted_keywords = sorted(data["keywords"].keys(), key=len, reverse=True)
         for keyword in sorted_keywords:
             # If keyword is found in the message
-            if keyword in message.content.lower():
+            if keyword in f" {message.content.lower()} ":
                 if LOG_KEYWORDS:
                     logger.info(
                         f'{id} - {message.author} triggered the keyword "{keyword}" (Message ID {message.id})'

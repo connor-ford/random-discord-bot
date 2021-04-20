@@ -72,5 +72,6 @@ async def _ping(ctx):
 
 
 bot.load_extension("cogs.pil")
+bot.load_extension("cogs.api")
 
 bot.run(TOKEN)

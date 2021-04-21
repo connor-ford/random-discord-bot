@@ -13,23 +13,32 @@ logger = logging.getLogger(__name__)
 class APICog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+        # Get cat breeds
         response = requests.get(url="https://api.thecatapi.com/v1/breeds")
         if response.status_code != 200:
-            logging.warning(f"Unable to get cat breeds: {response.text}")
-            return
-        self.breeds = response.json()
-        self.breed_ids = []
-        for breed in self.breeds:
-            self.breed_ids.append(breed["id"])
+            logging.error(f"Unable to get cat breeds: {response.text}")
+            exit()
+        self.cat_breeds = response.json()
+        self.cat_breed_ids = []
+        for breed in self.cat_breeds:
+            self.cat_breed_ids.append(breed["id"])
+
+        # Get dog breeds
+        response = requests.get(url="https://dog.ceo/api/breeds/list/all")
+        if response.status_code != 200:
+            logging.error(f"Unable to get dog breeds: {response.text}")
+            exit()
+        self.dog_breeds = response.json()["message"]
 
     @cog_ext.cog_subcommand(
         name="breeds",
         base="cat",
-        description="Get a list of cat breeds and their associated breed IDs.",
+        description="Get a list of cat breeds and their breed IDs.",
     )
     async def _cat_breeds(self, ctx):
         message = "List of breed IDs and their corresponding breeds:\n```"
-        for breed in self.breeds:
+        for breed in self.cat_breeds:
             message += f'\n{breed["id"].upper()}: {breed["name"]}'
         message += "```"
         await ctx.send(message)
@@ -57,14 +66,14 @@ class APICog(commands.Cog):
         options=[
             create_option(
                 name="breed_id",
-                description="The breed ID of cat. A list of available breed IDs can be found using `/cat breeds`.",
+                description="The breed ID of cat. A list of available breed IDs can be found using /cat breeds.",
                 option_type=3,
                 required=False,
             ),
         ],
     )
     async def _cat_image(self, ctx, breed_id: str = None):
-        if breed_id and not breed_id in self.breed_ids:
+        if breed_id and not breed_id in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
             )
@@ -90,14 +99,14 @@ class APICog(commands.Cog):
         options=[
             create_option(
                 name="breed_id",
-                description="The breed ID of cat. A list of available breed IDs can be found using `/cat breeds`.",
+                description="The breed ID of cat. A list of available breed IDs can be found using /cat breeds.",
                 option_type=3,
                 required=False,
             ),
         ],
     )
     async def _cat_info(self, ctx, breed_id: str = None):
-        if breed_id and not breed_id in self.breed_ids:
+        if breed_id and not breed_id in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
             )
@@ -105,9 +114,9 @@ class APICog(commands.Cog):
         breed_id = (
             breed_id
             if breed_id
-            else self.breed_ids[randint(0, len(self.breed_ids) - 1)]
+            else self.cat_breed_ids[randint(0, len(self.cat_breed_ids) - 1)]
         )
-        breed = next(b for b in self.breeds if b["id"] == breed_id)
+        breed = next(b for b in self.cat_breeds if b["id"] == breed_id)
 
         # Get info
         name = breed["name"]
@@ -145,6 +154,66 @@ class APICog(commands.Cog):
         embed.set_footer(text=wiki)
 
         await ctx.send(embed=embed)
+
+    @cog_ext.cog_subcommand(
+        name="breeds",
+        base="dog",
+        description="Get a list of dog breeds and their sub-breeds.",
+    )
+    async def _dog_breeds(self, ctx):
+        message = "List of dog breeds and their sub-breeds:\n```"
+        for breed, subbreeds in self.dog_breeds.items():
+            subbreeds = [subbreed.capitalize() for subbreed in subbreeds]
+            message += f"\n{breed.capitalize()}" + (
+                f': {", ".join(subbreeds)}' if subbreeds else ""
+            )
+        message += "```"
+        await ctx.send(message)
+
+    @cog_ext.cog_subcommand(
+        name="image",
+        base="dog",
+        description="Get an image of a dog by its breed and sub-breed. If no breed is given, a random breed will be used.",
+        base_description="Images and breeds of dogs.",
+        options=[
+            create_option(
+                name="breed",
+                description="The breed of dog. A list of available breeds can be found using /dog breeds.",
+                option_type=3,
+                required=False,
+            ),
+            create_option(
+                name="subbreed",
+                description="The sub-breed of dog. A list of available sub-breeds can be found using /dog breeds.",
+                option_type=3,
+                required=False,
+            ),
+        ],
+    )
+    async def _dog_image(self, ctx, breed: str = None, subbreed: str = None):
+        response = requests.get(
+            url="https://dog.ceo/api/breed"
+            + (
+                (
+                    f"/{breed.lower()}"
+                    + (f"/{subbreed.lower()}" if subbreed else "")
+                    + "/images/random"
+                )
+                if breed
+                else "s/image/random"
+            )
+        )
+        if response.status_code != 200:
+            if response.json()["message"].startswith("Breed not found"):
+                await ctx.send(
+                    "Breed could not be found. A list of available breed IDs can be found using `/dog breeds`."
+                )
+                return
+            logging.warning(f"Unable to get dog image: {response.text}")
+            await ctx.send(
+                "An API error has occurred. Check logs for more information."
+            )
+        await ctx.send(response.json()["message"])
 
 
 def setup(bot):

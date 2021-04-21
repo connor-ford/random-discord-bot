@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import bot
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_commands import create_choice, create_option
 from random import randint
 
 logger = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ class APICog(commands.Cog):
         description="Get a list of cat breeds and their breed IDs.",
     )
     async def _cat_breeds(self, ctx):
+        # List cat breeds
         message = "List of breed IDs and their corresponding breeds:\n```"
         for breed in self.cat_breeds:
             message += f'\n{breed["id"].upper()}: {breed["name"]}'
@@ -47,6 +48,7 @@ class APICog(commands.Cog):
         name="gif", base="cat", description="Get a random GIF of a cat."
     )
     async def _cat_gif(self, ctx):
+        # Get cat gif
         response = requests.get(
             url="https://api.thecatapi.com/v1/images/search",
             params={"mime_types": "gif"},
@@ -73,6 +75,7 @@ class APICog(commands.Cog):
         ],
     )
     async def _cat_image(self, ctx, breed_id: str = None):
+        # Get cat image
         if breed_id and not breed_id in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
@@ -106,6 +109,7 @@ class APICog(commands.Cog):
         ],
     )
     async def _cat_info(self, ctx, breed_id: str = None):
+        # Get cat info
         if breed_id and not breed_id in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
@@ -161,6 +165,7 @@ class APICog(commands.Cog):
         description="Get a list of dog breeds and their sub-breeds.",
     )
     async def _dog_breeds(self, ctx):
+        # Get dog breeds
         message = "List of dog breeds and their sub-breeds:\n```"
         for breed, subbreeds in self.dog_breeds.items():
             subbreeds = [subbreed.capitalize() for subbreed in subbreeds]
@@ -191,6 +196,7 @@ class APICog(commands.Cog):
         ],
     )
     async def _dog_image(self, ctx, breed: str = None, subbreed: str = None):
+        # Get dog image
         response = requests.get(
             url="https://dog.ceo/api/breed"
             + (
@@ -214,6 +220,79 @@ class APICog(commands.Cog):
                 "An API error has occurred. Check logs for more information."
             )
         await ctx.send(response.json()["message"])
+
+    @cog_ext.cog_subcommand(
+        name="single",
+        base="joke",
+        description="Get a two-part joke by category.",
+        options=[
+            create_option(
+                name="category",
+                description='The category of the joke. Select "any" for jokes from any category.',
+                option_type=3,
+                choices=[
+                    create_choice(name="Any", value="any"),
+                    create_choice(name="Christmas", value="christmas"),
+                    create_choice(name="Dark", value="dark"),
+                    create_choice(name="Miscellaneous", value="miscellaneous"),
+                    create_choice(name="Programming", value="programming"),
+                    create_choice(name="Pun", value="pun"),
+                    create_choice(name="Spooky", value="spooky"),
+                ],
+                required=True,
+            )
+        ],
+    )
+    async def _joke_single(self, ctx, category: str):
+        # Get single part joke
+        response = requests.get(
+            url=f"https://sv443.net/jokeapi/v2/joke/{category}",
+            params={"type": "single"},
+        )
+        if response.status_code != 200:
+            logging.warning(f"Unable to get joke: {response.text}")
+            await ctx.send(
+                "An API error has occurred. Check logs for more information."
+            )
+            return
+        await ctx.send(response.json()["joke"])
+
+    @cog_ext.cog_subcommand(
+        name="twopart",
+        base="joke",
+        description="Get a two-part joke by category.",
+        base_description="Single or two-part jokes, specified by category.",
+        options=[
+            create_option(
+                name="category",
+                description='The category of the joke. Select "any" for jokes from any category.',
+                option_type=3,
+                choices=[
+                    create_choice(name="Any", value="any"),
+                    create_choice(name="Christmas", value="christmas"),
+                    create_choice(name="Dark", value="dark"),
+                    create_choice(name="Miscellaneous", value="miscellaneous"),
+                    create_choice(name="Programming", value="programming"),
+                    create_choice(name="Pun", value="pun"),
+                    create_choice(name="Spooky", value="spooky"),
+                ],
+                required=True,
+            )
+        ],
+    )
+    async def _joke_twopart(self, ctx, category: str):
+        # Get two-part joke
+        response = requests.get(
+            url=f"https://sv443.net/jokeapi/v2/joke/{category}",
+            params={"type": "twopart"},
+        )
+        if response.status_code != 200:
+            logging.warning(f"Unable to get joke: {response.text}")
+            await ctx.send(
+                "An API error has occurred. Check logs for more information."
+            )
+            return
+        await ctx.send(f'{response.json()["setup"]}\n||{response.json()["delivery"]}||')
 
 
 def setup(bot):

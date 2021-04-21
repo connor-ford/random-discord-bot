@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class MinecraftCog(commands.Cog):
-    def __init__(self, bot):
-        pass
-
+    # Get skin of minecraft user
     @cog_ext.cog_subcommand(
         name="skin",
         base="minecraft",
@@ -59,6 +57,7 @@ class MinecraftCog(commands.Cog):
             uuid = str(UUID(response.json()["id"], version=4))
         await ctx.send(f"https://crafatar.com/skins/{uuid}")
 
+    # Get info on minecraft user
     @cog_ext.cog_subcommand(
         name="info",
         base="minecraft",

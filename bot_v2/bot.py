@@ -30,8 +30,6 @@ if LOG_LEVEL_STDOUT:
 
 logger.info(f"FILE Log Level set to {LOG_LEVEL_FILE}.")
 logger.info(f"STDOUT Log Level set to {LOG_LEVEL_STDOUT}.")
-logger.info(f"Cache logging {'ENABLED' if LOG_CACHE else 'DISABLED'}.")
-logger.info(f"Keyword logging {'ENABLED' if LOG_KEYWORDS else 'DISABLED'}.")
 
 ### SETUP ###
 

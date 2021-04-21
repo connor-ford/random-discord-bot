@@ -30,24 +30,26 @@ class APICog(commands.Cog):
             exit()
         self.dog_breeds = response.json()["message"]
 
+    ### Cat API ###
+
+    # List cat breeds
     @cog_ext.cog_subcommand(
         name="breeds",
         base="cat",
         description="Get a list of cat breeds and their breed IDs.",
     )
     async def _cat_breeds(self, ctx):
-        # List cat breeds
         message = "List of breed IDs and their corresponding breeds:\n```"
         for breed in self.cat_breeds:
             message += f'\n{breed["id"].upper()}: {breed["name"]}'
         message += "```"
         await ctx.send(message)
 
+    # Get cat gif
     @cog_ext.cog_subcommand(
         name="gif", base="cat", description="Get a random GIF of a cat."
     )
     async def _cat_gif(self, ctx):
-        # Get cat gif
         response = requests.get(
             url="https://api.thecatapi.com/v1/images/search",
             params={"mime_types": "gif"},
@@ -59,6 +61,7 @@ class APICog(commands.Cog):
             )
         await ctx.send(response.json()[0]["url"])
 
+    # Get cat image
     @cog_ext.cog_subcommand(
         name="image",
         base="cat",
@@ -74,7 +77,6 @@ class APICog(commands.Cog):
         ],
     )
     async def _cat_image(self, ctx, breed_id: str = None):
-        # Get cat image
         if breed_id and not breed_id in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
@@ -94,6 +96,7 @@ class APICog(commands.Cog):
             )
         await ctx.send(response.json()[0]["url"])
 
+    # Get cat info
     @cog_ext.cog_subcommand(
         name="info",
         base="cat",
@@ -108,7 +111,6 @@ class APICog(commands.Cog):
         ],
     )
     async def _cat_info(self, ctx, breed_id: str = None):
-        # Get cat info
         if breed_id and not breed_id in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
@@ -158,13 +160,15 @@ class APICog(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    ### Dog API ###
+
+    # Get dog breeds
     @cog_ext.cog_subcommand(
         name="breeds",
         base="dog",
         description="Get a list of dog breeds and their sub-breeds.",
     )
     async def _dog_breeds(self, ctx):
-        # Get dog breeds
         message = "List of dog breeds and their sub-breeds:\n```"
         for breed, subbreeds in self.dog_breeds.items():
             subbreeds = [subbreed.capitalize() for subbreed in subbreeds]
@@ -174,6 +178,7 @@ class APICog(commands.Cog):
         message += "```"
         await ctx.send(message)
 
+    # Get dog image
     @cog_ext.cog_subcommand(
         name="image",
         base="dog",
@@ -195,7 +200,6 @@ class APICog(commands.Cog):
         ],
     )
     async def _dog_image(self, ctx, breed: str = None, subbreed: str = None):
-        # Get dog image
         response = requests.get(
             url="https://dog.ceo/api/breed"
             + (
@@ -220,6 +224,9 @@ class APICog(commands.Cog):
             )
         await ctx.send(response.json()["message"])
 
+    ### Joke API ###
+
+    # Get single part joke
     @cog_ext.cog_subcommand(
         name="single",
         base="joke",
@@ -243,7 +250,6 @@ class APICog(commands.Cog):
         ],
     )
     async def _joke_single(self, ctx, category: str):
-        # Get single part joke
         response = requests.get(
             url=f"https://sv443.net/jokeapi/v2/joke/{category}",
             params={"type": "single"},
@@ -256,6 +262,7 @@ class APICog(commands.Cog):
             return
         await ctx.send(response.json()["joke"])
 
+    # Get two-part joke
     @cog_ext.cog_subcommand(
         name="twopart",
         base="joke",
@@ -280,7 +287,6 @@ class APICog(commands.Cog):
         ],
     )
     async def _joke_twopart(self, ctx, category: str):
-        # Get two-part joke
         response = requests.get(
             url=f"https://sv443.net/jokeapi/v2/joke/{category}",
             params={"type": "twopart"},

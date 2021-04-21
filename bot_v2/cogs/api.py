@@ -1,7 +1,6 @@
 import logging, requests
 from discord import Embed
 from discord.ext import commands
-from discord.ext.commands import bot
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_choice, create_option
@@ -69,7 +68,7 @@ class APICog(commands.Cog):
             create_option(
                 name="breed_id",
                 description="The breed ID of cat. A list of available breed IDs can be found using /cat breeds.",
-                option_type=3,
+                option_type=SlashCommandOptionType.STRING,
                 required=False,
             ),
         ],
@@ -103,7 +102,7 @@ class APICog(commands.Cog):
             create_option(
                 name="breed_id",
                 description="The breed ID of cat. A list of available breed IDs can be found using /cat breeds.",
-                option_type=3,
+                option_type=SlashCommandOptionType.STRING,
                 required=False,
             ),
         ],
@@ -184,13 +183,13 @@ class APICog(commands.Cog):
             create_option(
                 name="breed",
                 description="The breed of dog. A list of available breeds can be found using /dog breeds.",
-                option_type=3,
+                option_type=SlashCommandOptionType.STRING,
                 required=False,
             ),
             create_option(
                 name="subbreed",
                 description="The sub-breed of dog. A list of available sub-breeds can be found using /dog breeds.",
-                option_type=3,
+                option_type=SlashCommandOptionType.STRING,
                 required=False,
             ),
         ],
@@ -229,7 +228,7 @@ class APICog(commands.Cog):
             create_option(
                 name="category",
                 description='The category of the joke. Select "any" for jokes from any category.',
-                option_type=3,
+                option_type=SlashCommandOptionType.STRING,
                 choices=[
                     create_choice(name="Any", value="any"),
                     create_choice(name="Christmas", value="christmas"),
@@ -266,7 +265,7 @@ class APICog(commands.Cog):
             create_option(
                 name="category",
                 description='The category of the joke. Select "any" for jokes from any category.',
-                option_type=3,
+                option_type=SlashCommandOptionType.STRING,
                 choices=[
                     create_choice(name="Any", value="any"),
                     create_choice(name="Christmas", value="christmas"),

@@ -7,13 +7,14 @@ from discord_slash.utils.manage_commands import create_choice, create_option
 
 class RandomsCog(commands.Cog):
     # Flip a specified amount of coins
-    @cog_ext.cog_slash(
-        name="coinflip",
+    @cog_ext.cog_subcommand(
+        name="coins",
+        base="random",
         description="Flip a specified amount of coins.",
         options=[
             create_option(
                 name="amount",
-                description="The amount of coins to flip (default is 1, must be greater than 0).",
+                description="The amount of coins to flip (default is 1, must be greater than 0 and less than 1000).",
                 option_type=SlashCommandOptionType.INTEGER,
                 required=False,
             )
@@ -22,6 +23,9 @@ class RandomsCog(commands.Cog):
     async def _coinflip(self, ctx, amount: int = 1):
         if amount < 1:
             await ctx.send("Amount of coins must be greater than 0.")
+            return
+        if amount > 1000:
+            await ctx.send("Amount of coins must be less than 1000.")
             return
         await ctx.send(
             f"Flipped {amount} coins: `"
@@ -35,19 +39,20 @@ class RandomsCog(commands.Cog):
         )
 
     # Roll a specified amount of dice with a specified amount of faces
-    @cog_ext.cog_slash(
-        name="rolldice",
+    @cog_ext.cog_subcommand(
+        name="dice",
+        base="random",
         description="Roll a specified amount of dice with a specified amount of faces.",
         options=[
             create_option(
                 name="amount",
-                description="The amount of dice to roll (default is 1, must be greater than 0).",
+                description="The amount of dice to roll (default is 1, must be greater than 0 and less than 1000).",
                 option_type=SlashCommandOptionType.INTEGER,
                 required=False,
             ),
             create_option(
                 name="sides",
-                description="The amount of faces each dice should have (default is 6, must be greater than 1).",
+                description="The amount of faces each dice should have (default is 6, must be greater than 1 and less than 100).",
                 option_type=SlashCommandOptionType.INTEGER,
                 required=False,
             ),
@@ -57,8 +62,14 @@ class RandomsCog(commands.Cog):
         if amount < 1:
             await ctx.send("Amount of dice must be greater than 0.")
             return
+        if amount > 1000:
+            await ctx.send("Amount of dice must be less than 1000.")
+            return
         if sides < 2:
             await ctx.send("Amount of faces must be greater than 1.")
+            return
+        if sides > 100:
+            await ctx.send("Amount of faces must be less than 100.")
             return
         await ctx.send(
             f"Rolled {amount} {sides}-sided dice: `"
@@ -67,13 +78,14 @@ class RandomsCog(commands.Cog):
         )
 
     # Get a specified amount of numbers between a specified range
-    @cog_ext.cog_slash(
-        name="randomrange",
+    @cog_ext.cog_subcommand(
+        name="range",
+        base="random",
         description="Get a specified amount of random numbers in a specified range.",
         options=[
             create_option(
                 name="amount",
-                description="The amount of numbers to generate (default is 1, must be greater than 0).",
+                description="The amount of numbers to generate (default is 1, must be greater than 0 and less than 1000).",
                 option_type=SlashCommandOptionType.INTEGER,
                 required=False,
             ),
@@ -94,6 +106,9 @@ class RandomsCog(commands.Cog):
     async def _randomrange(self, ctx, amount: int = 1, min: int = 1, max: int = 10):
         if amount < 1:
             await ctx.send("Amount of numbers must be greater than 0.")
+            return
+        if amount > 1000:
+            await ctx.send("Amount of coins must be less than 1000.")
             return
         await ctx.send(
             f"{amount} number{'s' if amount > 1 else ''} between {min} and {max}: `"

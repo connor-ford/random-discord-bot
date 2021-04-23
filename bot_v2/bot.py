@@ -1,4 +1,4 @@
-import discord, logging, sys
+import discord, logging, sys, os
 
 from config import *
 from discord.ext import commands
@@ -57,20 +57,35 @@ async def on_ready():
     )
 
 
+@bot.event
+async def on_slash_command(ctx):
+    # Log the command called
+    logger.info(
+        'Slash command "'
+        + ctx.name
+        + (f" {ctx.subcommand_name}" if ctx.subcommand_name else "")
+        + f'" called '
+        + (
+            f'in guild "{ctx.guild.name}" (ID: {ctx.guild_id}) in channel "{bot.get_channel(ctx.channel_id)}" (ID: {ctx.channel_id}) by'
+            if ctx.guild_id
+            else f"in DM of"
+        )
+        + f' user "{ctx.author}" (ID: {ctx.author_id}) (Interaction ID: {ctx.interaction_id})'
+    )
+
+
 ### COMMANDS ###
 
 # Ping
 @slash.slash(
     name="ping",
     description="Get the latency of the bot in milliseconds.",
-    guild_ids=guild_ids,
 )
 async def _ping(ctx):
     await ctx.send(f"Pong! ({(int) (bot.latency*1000)}ms)")
 
 
-bot.load_extension("cogs.pil")
-bot.load_extension("cogs.api")
-bot.load_extension("cogs.minecraft")
-
+cognames = ["api", "minecraft", "pil", "randoms"]
+for cogname in cognames:
+    bot.load_extension(f"cogs.{cogname}")
 bot.run(TOKEN)

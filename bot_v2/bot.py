@@ -74,18 +74,8 @@ async def on_slash_command(ctx):
     )
 
 
-### COMMANDS ###
-
-# Ping
-@slash.slash(
-    name="ping",
-    description="Get the latency of the bot in milliseconds.",
-)
-async def _ping(ctx):
-    await ctx.send(f"Pong! ({(int) (bot.latency*1000)}ms)")
-
-
-cognames = ["api", "minecraft", "pil", "randoms"]
+cognames = ["api", "minecraft", "pil", "randoms", "utils"]
 for cogname in cognames:
     bot.load_extension(f"cogs.{cogname}")
+
 bot.run(TOKEN)

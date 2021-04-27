@@ -1,8 +1,5 @@
 from discord.ext import commands
 from discord_slash import cog_ext
-import discord_slash
-from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_choice, create_option
 
 
 class UtilsCog(commands.Cog):

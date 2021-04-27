@@ -74,7 +74,7 @@ async def on_slash_command(ctx):
     )
 
 
-cognames = ["api", "minecraft", "pil", "randoms", "utils"]
+cognames = ["api", "minecraft", "pil", "randoms", "utils", "keywords"]
 for cogname in cognames:
     bot.load_extension(f"cogs.{cogname}")
 

@@ -1,6 +1,7 @@
-import discord, logging, sys, os
+import discord, logging, sys
 
 from config import *
+from data.keyword_manager import keyword_manager
 from discord.ext import commands
 from discord_slash import SlashCommand
 from logging.handlers import TimedRotatingFileHandler
@@ -66,12 +67,21 @@ async def on_slash_command(ctx):
         + (f" {ctx.subcommand_name}" if ctx.subcommand_name else "")
         + f'" called '
         + (
-            f'in guild "{ctx.guild.name}" (ID: {ctx.guild_id}) in channel "{bot.get_channel(ctx.channel_id)}" (ID: {ctx.channel_id}) by'
-            if ctx.guild_id
+            f'in guild "{ctx.guild.name}" (ID: {ctx.guild.id}) in channel "{bot.get_channel(ctx.channel_id)}" (ID: {ctx.channel_id}) by'
+            if ctx.guild.id
             else f"in DM of"
         )
         + f' user "{ctx.author}" (ID: {ctx.author_id}) (Interaction ID: {ctx.interaction_id})'
     )
+
+
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+    response = keyword_manager.check(message)
+    if response:
+        await message.channel.send(response)
 
 
 cognames = ["api", "minecraft", "pil", "randoms", "utils", "keywords"]

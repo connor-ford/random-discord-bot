@@ -2,7 +2,7 @@ import random
 from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_choice, create_option
+from discord_slash.utils.manage_commands import create_option
 
 
 class RandomsCog(commands.Cog):

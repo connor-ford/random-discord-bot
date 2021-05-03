@@ -1,11 +1,10 @@
 from discord.ext import commands
 from discord_slash import cog_ext
-import discord_slash
 from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_choice, create_option
+from discord_slash.utils.manage_commands import create_option
 
 from data.data_manager import data_manager
-from bot import guild_ids
+from data.keyword_manager import keyword_manager
 
 
 class KeywordsCog(commands.Cog):
@@ -35,10 +34,7 @@ class KeywordsCog(commands.Cog):
         ],
     )
     async def _add_keyword(self, ctx, keyword: str, response: str, keyword_only: bool):
-        data_manager.load(ctx)
-        data_manager.update(
-            "keywords", {(f" {keyword} " if keyword_only else keyword): response}
-        )
+        keyword_manager.add(ctx, f" {keyword} " if keyword_only else keyword, response)
         await ctx.send(f"Added keyword `{keyword}` with repsonse `{response}`.")
 
     @cog_ext.cog_subcommand(
@@ -55,8 +51,7 @@ class KeywordsCog(commands.Cog):
         ],
     )
     async def _remove_keyword(self, ctx, keyword: str):
-        data_manager.load(ctx)
-        data_manager.remove("keywords", keyword)
+        keyword_manager.remove(ctx, keyword)
         await ctx.send(f"Removed keyword `{keyword}`.")
 
     @cog_ext.cog_subcommand(

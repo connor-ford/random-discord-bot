@@ -35,7 +35,9 @@ class KeywordsCog(commands.Cog):
     )
     async def _add_keyword(self, ctx, keyword: str, response: str, keyword_only: bool):
         keyword_manager.add(ctx, f" {keyword} " if keyword_only else keyword, response)
-        await ctx.send(f"Added keyword `{keyword}` with repsonse `{response}`.")
+        await ctx.send(
+            f"Added keyword `{keyword}` with repsonse `{response}`{' (Keyword only)' if keyword_only else ''}."
+        )
 
     @cog_ext.cog_subcommand(
         name="remove",

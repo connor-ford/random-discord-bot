@@ -24,13 +24,17 @@ class KeywordManager:
         data_manager.load(ctx)
         data_manager.update("keywords", {keyword: response})
 
-    def remove(self, ctx, keyword):
+    def remove(self, ctx, keyword, keyword_only):
         self._check_id(ctx)
-        if keyword not in self.keywords[self.id_type][self.id]:
+        if (f" {keyword} " if keyword_only else keyword) not in self.keywords[
+            self.id_type
+        ][self.id]:
             return False
-        self.keywords[self.id_type][self.id].pop(keyword)
+        self.keywords[self.id_type][self.id].pop(
+            f" {keyword} " if keyword_only else keyword
+        )
         data_manager.load(ctx)
-        data_manager.remove("keywords", keyword)
+        data_manager.remove("keywords", f" {keyword} " if keyword_only else keyword)
         return True
 
     def check(self, message):

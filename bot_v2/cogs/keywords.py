@@ -50,11 +50,23 @@ class KeywordsCog(commands.Cog):
                 option_type=SlashCommandOptionType.STRING,
                 required=True,
             ),
+            create_option(
+                name="keyword_only",
+                description="Determines if the keyword had the keyword_only flag.",
+                option_type=SlashCommandOptionType.BOOLEAN,
+                required=True,
+            ),
         ],
     )
-    async def _remove_keyword(self, ctx, keyword: str):
-        keyword_manager.remove(ctx, keyword)
-        await ctx.send(f"Removed keyword `{keyword}`.")
+    async def _remove_keyword(self, ctx, keyword: str, keyword_only: bool):
+        if not keyword_manager.remove(ctx, keyword, keyword_only):
+            await ctx.send(
+                f"Was unable to remove `{keyword}`{' (Keyword only)' if keyword_only else ''}."
+            )
+            return
+        await ctx.send(
+            f"Removed keyword `{keyword}`{' (Keyword only)' if keyword_only else ''}."
+        )
 
     @cog_ext.cog_subcommand(
         name="list",

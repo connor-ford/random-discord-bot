@@ -8,7 +8,7 @@ class DataManager:
     def get(self, data_key):
         return self.guild_data[data_key] if data_key in self.guild_data else None
 
-    # Load a guild/user from JSON file
+    # Load a guild/user using ctx from JSON file
     def load(self, ctx):
         self.id = ctx.guild.id if ctx.guild else ctx.author.id
         self.id_type = "guild" if ctx.guild else "user"

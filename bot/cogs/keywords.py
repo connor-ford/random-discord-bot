@@ -3,7 +3,6 @@ from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option
 
-from data.data_manager import data_manager
 from data.keyword_manager import keyword_manager
 
 
@@ -82,12 +81,11 @@ class KeywordsCog(commands.Cog):
         base="keywords",
     )
     async def _list_keywords(self, ctx):
-        data_manager.load(ctx)
-        keywords = data_manager.get("keywords")
+        keywords = keyword_manager.list(ctx)
 
         if not keywords:
             await ctx.send(
-                f"There are no keywords for this {'server' if data_manager.id_type == 'guild' else 'DM'}."
+                f"There are no keywords for this {'server' if keyword_manager.id_type == 'guild' else 'DM'}."
             )
             return
 

@@ -40,6 +40,10 @@ class KeywordManager:
             if keyword.lower() in f" {message.content.lower()} ":
                 return response
         return False
+    
+    def list_keywords(self, ctx):
+        data_manager.load(ctx)
+        return data_manager.get("keywords")
 
     def _check_id(self, ctx):
         if ctx.guild:

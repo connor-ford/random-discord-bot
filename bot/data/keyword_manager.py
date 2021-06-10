@@ -1,7 +1,5 @@
-import json, os, logging
+import json, os
 from data.data_manager import data_manager
-
-logger = logging.getLogger(__name__)
 
 
 class KeywordManager:
@@ -14,7 +12,6 @@ class KeywordManager:
                     self.keywords[filepath.split("/")[1][:-1]][
                         name.split(".")[0]
                     ] = json.load(f).get("keywords")
-        print(self.keywords)
 
     def add(self, ctx, keyword, response):
         self._check_id(ctx)

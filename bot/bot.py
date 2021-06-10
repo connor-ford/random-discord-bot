@@ -1,7 +1,5 @@
 import discord, logging, sys
-
 from config import *
-from data.keyword_manager import keyword_manager
 from discord.ext import commands
 from discord_slash import SlashCommand
 from logging.handlers import TimedRotatingFileHandler
@@ -68,7 +66,7 @@ async def on_slash_command(ctx):
         + f'" called '
         + (
             f'in guild "{ctx.guild.name}" (ID: {ctx.guild.id}) in channel "{bot.get_channel(ctx.channel_id)}" (ID: {ctx.channel_id}) by'
-            if ctx.guild.id
+            if ctx.guild
             else f"in DM of"
         )
         + f' user "{ctx.author}" (ID: {ctx.author_id}) (Interaction ID: {ctx.interaction_id})'

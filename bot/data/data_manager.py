@@ -14,7 +14,7 @@ class DataManager:
         self.id_type = "guild" if ctx.guild else "user"
         if not os.path.isfile(f"data/{self.id_type}s/{self.id}.json"):
             with open(f"data/{self.id_type}s/{self.id}.json", "w+") as f:
-                self.guild_data = {"keywords": {}}
+                self.guild_data = {}
                 json.dump(self.guild_data, f)
             logger.info(f"Created new file for {self.id_type} {self.id}.")
             return
@@ -26,9 +26,9 @@ class DataManager:
     def remove(self, data_key, key):
         if data_key in self.guild_data:
             self.guild_data[data_key].pop(key)
-        with open(f"data/{self.id_type}s/{self.id}.json", "w") as f:
-            json.dump(self.guild_data, f)
-        logger.info(f"Removed {self.id_type} data for {self.id}.")
+            with open(f"data/{self.id_type}s/{self.id}.json", "w") as f:
+                json.dump(self.guild_data, f)
+            logger.info(f"Removed {self.id_type} data for {self.id}.")
 
     # Update the data of the specified data key in the current guild/user
     def update(self, data_key, guild_data):

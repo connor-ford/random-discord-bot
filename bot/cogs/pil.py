@@ -9,7 +9,6 @@ from random import randint
 
 class PILCog(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
         self.rgb_to_hsv = np.vectorize(colorsys.rgb_to_hsv)
         self.hsv_to_rgb = np.vectorize(colorsys.hsv_to_rgb)
 

@@ -11,8 +11,6 @@ logger = logging.getLogger(__name__)
 
 class APICog(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
-
         # Get cat breeds
         response = requests.get(url="https://api.thecatapi.com/v1/breeds")
         if response.status_code != 200:

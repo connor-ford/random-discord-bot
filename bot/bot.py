@@ -75,15 +75,6 @@ async def on_slash_command(ctx):
     )
 
 
-@bot.event
-async def on_message(message):
-    if message.author.bot:
-        return
-    response = keyword_manager.check(message)
-    if response:
-        await message.channel.send(response)
-
-
 cognames = ["api", "minecraft", "pil", "randoms", "utils", "keywords"]
 for cogname in cognames:
     bot.load_extension(f"cogs.{cogname}")

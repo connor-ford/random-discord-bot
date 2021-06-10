@@ -8,6 +8,14 @@ from data.keyword_manager import keyword_manager
 
 
 class KeywordsCog(commands.Cog):
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+        response = keyword_manager.check(message)
+        if response:
+            await message.channel.send(response)
+
     @cog_ext.cog_subcommand(
         name="add",
         description="Add a keyword and its response.",
@@ -61,7 +69,7 @@ class KeywordsCog(commands.Cog):
     async def _remove_keyword(self, ctx, keyword: str, keyword_only: bool):
         if not keyword_manager.remove(ctx, keyword, keyword_only):
             await ctx.send(
-                f"Was unable to remove `{keyword}`{' (Keyword only)' if keyword_only else ''}."
+                f"Could not remove `{keyword}`{' (Keyword only)' if keyword_only else ''}."
             )
             return
         await ctx.send(

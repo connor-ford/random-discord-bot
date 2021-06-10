@@ -36,12 +36,15 @@ class KeywordManager:
 
     def check(self, message):
         self._check_id(message)
+        if self.id not in self.keywords[self.id_type] or self.keywords[self.id_type][self.id] == None:
+            return False
         for keyword, response in self.keywords[self.id_type][self.id].items():
             if keyword.lower() in f" {message.content.lower()} ":
                 return response
         return False
     
-    def list_keywords(self, ctx):
+    def list(self, ctx):
+        self._check_id(ctx)
         data_manager.load(ctx)
         return data_manager.get("keywords")
 

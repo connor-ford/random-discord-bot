@@ -18,11 +18,15 @@ class LockCog(commands.Cog):
         updates = lock_manager.check(member, after)
         for update in updates:
             if update[0] == "mute":
-                await member.edit(mute=update[1])
+                await member.edit(
+                    mute=update[1],
+                    reason=f"Locked as {'muted' if update[1] else 'unmuted'}.",
+                )
             elif update[0] == "deafen":
-                await member.edit(deafen=update[1])
+                await member.edit(deafen=update[1], reason=f"Locked as {'deafened' if update[1] else 'undeafened'}.")
             elif update[0] == "channel":
-                await member.edit(voice_channel=await self.bot.fetch_channel(update[1]))
+                channel = await self.bot.fetch_channel(update[1])
+                await member.edit(voice_channel=channel, reason=f"Locked in channel {channel} (ID: {channel.id}).")
 
     @cog_ext.cog_subcommand(
         name="mute",
@@ -110,7 +114,7 @@ class LockCog(commands.Cog):
             return
         lock_manager.add(ctx, user.id, lock_type="channel", lock_value=str(channel.id))
         await ctx.send(
-            f"User `{user}` locked in `{channel}` (ID {channel.id}).",
+            f"User `{user}` locked in `{channel}` (ID: {channel.id}).",
             hidden=True,
         )
 

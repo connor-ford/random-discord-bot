@@ -26,7 +26,9 @@ class LockManager:
 
     def remove(self, ctx, id):
         self.id = str(id)
-        self.locks.pop(self.id)
+        self.guild_id = str(ctx.guild.id)
+        if self.guild_id in self.locks and self.id in self.locks[self.guild_id]:
+            self.locks[self.guild_id].pop(self.id)
         data_manager.load(ctx)
         data_manager.remove("locks", self.id)
         return True

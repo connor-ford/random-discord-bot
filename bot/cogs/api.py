@@ -1,4 +1,5 @@
-import logging, requests
+import logging
+import requests
 from discord import Embed
 from discord.ext import commands
 from discord_slash import cog_ext
@@ -28,7 +29,7 @@ class APICog(commands.Cog):
             exit()
         self.dog_breeds = response.json()["message"]
 
-    ### Cat API ###
+    # Cat API
 
     # List cat breeds
     @cog_ext.cog_subcommand(
@@ -75,7 +76,7 @@ class APICog(commands.Cog):
         ],
     )
     async def _cat_image(self, ctx, breed_id: str = None):
-        if breed_id and not breed_id in self.cat_breed_ids:
+        if breed_id and breed_id not in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
             )
@@ -109,7 +110,7 @@ class APICog(commands.Cog):
         ],
     )
     async def _cat_info(self, ctx, breed_id: str = None):
-        if breed_id and not breed_id in self.cat_breed_ids:
+        if breed_id and breed_id not in self.cat_breed_ids:
             await ctx.send(
                 "Breed ID could not be found. A list of available breed IDs can be found using `/cat breeds`."
             )
@@ -158,7 +159,7 @@ class APICog(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    ### Dog API ###
+    # Dog API
 
     # Get dog breeds
     @cog_ext.cog_subcommand(
@@ -222,7 +223,7 @@ class APICog(commands.Cog):
             )
         await ctx.send(response.json()["message"])
 
-    ### Joke API ###
+    # Joke API
 
     # Get single part joke
     @cog_ext.cog_subcommand(

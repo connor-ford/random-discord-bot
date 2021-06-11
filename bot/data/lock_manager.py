@@ -1,4 +1,5 @@
-import json, os
+import json
+import os
 from discord import VoiceState, Member
 from data.data_manager import data_manager
 
@@ -43,7 +44,9 @@ class LockManager:
                 (lock_type == "mute" and voice_state.mute != lock_value)
                 or (lock_type == "deafen" and voice_state.deaf != lock_value)
                 or (
-                    lock_type == "channel" and voice_state.channel and str(voice_state.channel.id) != lock_value
+                    lock_type == "channel"
+                    and voice_state.channel
+                    and str(voice_state.channel.id) != lock_value
                 )
             ):
                 updates.append([lock_type, lock_value])

@@ -1,4 +1,5 @@
-import json, os
+import json
+import os
 from data.data_manager import data_manager
 
 
@@ -36,13 +37,16 @@ class KeywordManager:
 
     def check(self, message):
         self._check_id(message)
-        if self.id not in self.keywords[self.id_type] or self.keywords[self.id_type][self.id] == None:
+        if (
+            self.id not in self.keywords[self.id_type]
+            or not self.keywords[self.id_type][self.id]
+        ):
             return False
         for keyword, response in self.keywords[self.id_type][self.id].items():
             if keyword.lower() in f" {message.content.lower()} ":
                 return response
         return False
-    
+
     def list(self, ctx):
         self._check_id(ctx)
         data_manager.load(ctx)

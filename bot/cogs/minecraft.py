@@ -1,4 +1,5 @@
-import logging, requests
+import logging
+import requests
 from datetime import datetime
 from discord import Embed
 from discord.ext import commands

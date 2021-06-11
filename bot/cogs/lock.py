@@ -2,7 +2,7 @@ from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option
-from discord import VoiceState, Member, VoiceChannel, ChannelType, user
+from discord import VoiceState, Member, VoiceChannel, ChannelType
 
 from data.lock_manager import lock_manager
 
@@ -23,10 +23,16 @@ class LockCog(commands.Cog):
                     reason=f"Locked as {'muted' if update[1] else 'unmuted'}.",
                 )
             elif update[0] == "deafen":
-                await member.edit(deafen=update[1], reason=f"Locked as {'deafened' if update[1] else 'undeafened'}.")
+                await member.edit(
+                    deafen=update[1],
+                    reason=f"Locked as {'deafened' if update[1] else 'undeafened'}.",
+                )
             elif update[0] == "channel":
                 channel = await self.bot.fetch_channel(update[1])
-                await member.edit(voice_channel=channel, reason=f"Locked in channel {channel} (ID: {channel.id}).")
+                await member.edit(
+                    voice_channel=channel,
+                    reason=f"Locked in channel {channel} (ID: {channel.id}).",
+                )
 
     @cog_ext.cog_subcommand(
         name="mute",
@@ -131,7 +137,9 @@ class LockCog(commands.Cog):
         if not users:
             await ctx.send("There are no locked users in this server.")
             return
-        message = f"Listing {len(users)} locked user{'s' if len(users) > 1 else ''}:\n```"
+        message = (
+            f"Listing {len(users)} locked user{'s' if len(users) > 1 else ''}:\n```"
+        )
         for user_id, locks in users.items():
             user = await self.bot.fetch_user(user_id)
             message += f"{user}\n"
@@ -145,7 +153,6 @@ class LockCog(commands.Cog):
                     message += f" - Channel: {channel} (ID: {channel.id})\n"
         message += "```"
         await ctx.send(message)
-
 
     @cog_ext.cog_slash(
         name="unlock",

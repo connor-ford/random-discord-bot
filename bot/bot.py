@@ -1,10 +1,10 @@
-import discord, logging, sys
-from config import *
+import discord
+import logging
+import sys
+from config import LOG_LEVEL_FILE, LOG_LEVEL_STDOUT, TOKEN
 from discord.ext import commands
 from discord_slash import SlashCommand
 from logging.handlers import TimedRotatingFileHandler
-
-### LOGGING ###
 
 # Init logging
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
@@ -30,7 +30,7 @@ if LOG_LEVEL_STDOUT:
 logger.info(f"FILE Log Level set to {LOG_LEVEL_FILE}.")
 logger.info(f"STDOUT Log Level set to {LOG_LEVEL_STDOUT}.")
 
-### SETUP ###
+# Setup
 
 bot = commands.Bot(
     command_prefix="#",
@@ -63,11 +63,11 @@ async def on_slash_command(ctx):
         'Slash command "'
         + ctx.name
         + (f" {ctx.subcommand_name}" if ctx.subcommand_name else "")
-        + f'" called '
+        + '" called '
         + (
             f'in guild "{ctx.guild.name}" (ID: {ctx.guild.id}) in channel "{bot.get_channel(ctx.channel_id)}" (ID: {ctx.channel_id}) by'
             if ctx.guild
-            else f"in DM of"
+            else "in DM of"
         )
         + f' user "{ctx.author}" (ID: {ctx.author_id}) (Interaction ID: {ctx.interaction_id})'
     )

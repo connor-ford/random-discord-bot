@@ -11,7 +11,7 @@ class KeywordManager:
                 with open(filepath) as f:
                     self.keywords[filepath.split("/")[1][:-1]][
                         name.split(".")[0]
-                    ] = json.load(f).get("keywords")
+                    ] = json.load(f).get("keywords", {})
 
     def add(self, ctx, keyword, response):
         self._check_id(ctx)

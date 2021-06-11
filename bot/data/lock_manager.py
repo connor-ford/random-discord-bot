@@ -10,17 +10,19 @@ class LockManager:
             for name in [file for file in files if file.endswith(".json")]:
                 filepath = os.path.join(root, name)
                 with open(filepath) as f:
-                    self.locks[
-                        name.split(".")[0]
-                    ] = json.load(f).get("locks")
+                    self.locks[name.split(".")[0]] = json.load(f).get("locks", {})
+        print(self.locks)
 
     def add(self, ctx, id, lock_type: str, lock_value):
         self.id = str(id)
-        if self.id not in self.locks:
-            self.locks[str(ctx.guild.id)][self.id] = {}
-        self.locks[str(ctx.guild.id)][self.id][lock_type] = lock_value
+        self.guild_id = str(ctx.guild.id)
+        if self.guild_id not in self.locks:
+            self.locks[self.guild_id] = {}
+        if self.id not in self.locks[self.guild_id]:
+            self.locks[self.guild_id][self.id] = {}
+        self.locks[self.guild_id][self.id].update({lock_type: lock_value})
         data_manager.load(ctx)
-        data_manager.update("locks", {id: {lock_type: lock_value}})
+        data_manager.update("locks", self.locks[self.guild_id])
 
     def remove(self, ctx, id):
         self.id = str(id)
@@ -29,16 +31,18 @@ class LockManager:
         data_manager.remove("locks", self.id)
         return True
 
-    def check(self, member: Member, before: VoiceState, after: VoiceState):
+    def check(self, member: Member, voice_state: VoiceState):
         self.id = str(member.id)
         if self.id not in self.locks[str(member.guild.id)]:
             return []
         updates = []
         for lock_type, lock_value in self.locks[str(member.guild.id)][self.id].items():
             if (
-                (lock_type == "mute" and after.mute != lock_value)
-                or (lock_type == "deafen" and after.deaf != lock_value)
-                or (lock_type == "channel_move" and before.channel != after.channel)
+                (lock_type == "mute" and voice_state.mute != lock_value)
+                or (lock_type == "deafen" and voice_state.deaf != lock_value)
+                or (
+                    lock_type == "channel" and voice_state.channel and str(voice_state.channel.id) != lock_value
+                )
             ):
                 updates.append([lock_type, lock_value])
         return updates

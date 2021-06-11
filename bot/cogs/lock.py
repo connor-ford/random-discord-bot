@@ -2,7 +2,7 @@ from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option
-from discord import VoiceState, Member, VoiceChannel, ChannelType
+from discord import VoiceState, Member, VoiceChannel, ChannelType, user
 
 from data.lock_manager import lock_manager
 
@@ -117,6 +117,35 @@ class LockCog(commands.Cog):
             f"User `{user}` locked in `{channel}` (ID: {channel.id}).",
             hidden=True,
         )
+
+    @cog_ext.cog_subcommand(
+        base="lock",
+        name="list",
+        description="Lists all locked users. This command can only be run in servers.",
+    )
+    async def _list_locks(self, ctx):
+        if not ctx.guild:
+            await ctx.send("This command can only be run in servers.", hidden=True)
+            return
+        users = lock_manager.list(str(ctx.guild.id))
+        if not users:
+            await ctx.send("There are no locked users in this server.")
+            return
+        message = f"Listing {len(users)} locked user{'s' if len(users) > 1 else ''}:\n```"
+        for user_id, locks in users.items():
+            user = await self.bot.fetch_user(user_id)
+            message += f"{user}\n"
+            for lock_type, lock_value in locks.items():
+                if lock_type == "mute":
+                    message += f" - {'Muted' if lock_value else 'Unmuted'}\n"
+                elif lock_type == "deafen":
+                    message += f" - {'Deafened' if lock_value else 'Undeafened'}\n"
+                elif lock_type == "channel":
+                    channel = await self.bot.fetch_channel(lock_value)
+                    message += f" - Channel: {channel} (ID: {channel.id})\n"
+        message += "```"
+        await ctx.send(message)
+
 
     @cog_ext.cog_slash(
         name="unlock",

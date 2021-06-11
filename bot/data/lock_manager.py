@@ -49,5 +49,8 @@ class LockManager:
                 updates.append([lock_type, lock_value])
         return updates
 
+    def list(self, guild_id: str):
+        return self.locks[guild_id] if guild_id in self.locks else {}
+
 
 lock_manager = LockManager()

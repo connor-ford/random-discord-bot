@@ -1,10 +1,14 @@
+import logging
+from discord.errors import NotFound
 from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_commands import create_choice, create_option
 from discord import VoiceState, Member, VoiceChannel, ChannelType
 
 from data.lock_manager import lock_manager
+
+logger = logging.getLogger(__name__)
 
 
 class LockCog(commands.Cog):
@@ -141,7 +145,11 @@ class LockCog(commands.Cog):
             f"Listing {len(users)} locked user{'s' if len(users) > 1 else ''}:\n```"
         )
         for user_id, locks in users.items():
-            user = await self.bot.fetch_user(user_id)
+            try:
+                user = await self.bot.fetch_user(user_id)
+            except NotFound as e:
+                logger.info(f"User {user_id} not found.")
+
             message += f"{user}\n"
             for lock_type, lock_value in locks.items():
                 if lock_type == "mute":
@@ -154,8 +162,9 @@ class LockCog(commands.Cog):
         message += "```"
         await ctx.send(message)
 
-    @cog_ext.cog_slash(
-        name="unlock",
+    @cog_ext.cog_subcommand(
+        base="lock",
+        name="remove",
         description="Unlock the specified user. This command can only be run in servers.",
         options=[
             create_option(
@@ -164,15 +173,39 @@ class LockCog(commands.Cog):
                 option_type=SlashCommandOptionType.USER,
                 required=True,
             ),
+            create_option(
+                name="lock_type",
+                description="The type of lock to remove from the user (defaults to All)",
+                option_type=SlashCommandOptionType.STRING,
+                required=False,
+                choices=[
+                    create_choice(
+                        name="Mute",
+                        value="mute",
+                    ),
+                    create_choice(
+                        name="Deafen",
+                        value="deafen",
+                    ),
+                    create_choice(
+                        name="Channel",
+                        value="channel"
+                    ),
+                    create_choice(
+                        name="All",
+                        value="all"
+                    )
+                ]
+            )
         ],
     )
-    async def _unlock(self, ctx, user: Member):
+    async def _unlock(self, ctx, user: Member, lock_type: str = "all"):
         if not ctx.guild:
             await ctx.send("This command can only be run in servers.")
             return
-        lock_manager.remove(ctx, user.id)
+        lock_manager.remove(ctx, user.id, lock_type)
         await ctx.send(
-            f"User `{user}` unlocked.",
+            f"Removed {lock_type} lock{'s' if lock_type == 'all' else ''} from {user}.",
             hidden=True,
         )
 

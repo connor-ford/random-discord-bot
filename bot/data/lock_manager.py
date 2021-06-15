@@ -23,16 +23,18 @@ class LockManager:
             self.locks[self.guild_id][self.id] = {}
         self.locks[self.guild_id][self.id].update({lock_type: lock_value})
         data_manager.load(ctx)
-        data_manager.update("locks", self.locks[self.guild_id])
+        data_manager.update("locks", self.locks)
 
-    def remove(self, ctx, id):
+    def remove(self, ctx, id, lock_type):
         self.id = str(id)
         self.guild_id = str(ctx.guild.id)
         if self.guild_id in self.locks and self.id in self.locks[self.guild_id]:
-            self.locks[self.guild_id].pop(self.id)
-        data_manager.load(ctx)
-        data_manager.remove("locks", self.id)
-        return True
+            if lock_type == "all":
+                self.locks[self.guild_id].pop(self.id)
+            else:
+                self.locks[self.guild_id][self.id].pop(lock_type)
+            data_manager.load(ctx)
+            data_manager.update("locks", self.locks)
 
     def check(self, member: Member, voice_state: VoiceState):
         self.id = str(member.id)
